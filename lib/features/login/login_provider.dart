@@ -47,13 +47,6 @@ class LoginProvider with ChangeNotifier {
           );
         }
       });
-//      sl<LocalRepo>().setName(name: emailController.text);
-//      isLoginLoading = true;
-//      notifyListeners();
-//      sl<SocketService>().socketIO.sendMessage(
-//            'data',
-//            json.encode({'name': emailController.text}),
-//          );
     }
   }
 }

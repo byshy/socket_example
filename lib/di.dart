@@ -80,7 +80,6 @@ Future<void> init() async {
 }
 
 void refreshToken() {
-//  sl<SocketService>().socketIO.init();
   final String token = sl<LocalRepo>().getUser()?.token;
   sl<ApiRepo>().client.options.headers = {'x-auth-token': token};
   print('token: $token');
