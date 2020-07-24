@@ -12,7 +12,8 @@ import 'package:socketexample/services/socket_service.dart';
 import 'data/api_repository.dart';
 import 'data/local_repository.dart';
 import 'features/active_users/active_users_provider.dart';
-import 'features/chat/chat_provider.dart';
+import 'features/chat/group_chat_provider.dart';
+import 'features/chat/private_chat_provider.dart';
 import 'features/sign_up/sign_up_provider.dart';
 import 'services/navigation_service.dart';
 
@@ -62,7 +63,6 @@ Future<void> init() async {
                 'email': sl<LocalRepo>().getUser().data.email,
               }),
             );
-        print('debugging: user active');
       }
     },
   );
@@ -70,7 +70,8 @@ Future<void> init() async {
   sl.registerLazySingleton<SocketIO>(() => socketIO);
 
   sl.registerLazySingleton(() => LoginProvider());
-  sl.registerLazySingleton(() => ChatProvider());
+  sl.registerLazySingleton(() => GroupChatProvider());
+  sl.registerLazySingleton(() => PrivateChatProvider());
   sl.registerLazySingleton(() => SignUpProvider());
   sl.registerLazySingleton(() => ActiveUsersProvider());
 

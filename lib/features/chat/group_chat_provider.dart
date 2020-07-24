@@ -10,8 +10,8 @@ import 'package:socketexample/services/socket_service.dart';
 
 import '../../di.dart';
 
-class ChatProvider with ChangeNotifier {
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+class GroupChatProvider with ChangeNotifier {
+  GlobalKey<ScaffoldState> groupScaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
 

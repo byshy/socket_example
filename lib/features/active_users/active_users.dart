@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/features/active_users/active_users_provider.dart';
+import 'package:socketexample/features/chat/private_chat_provider.dart';
 import 'package:socketexample/models/active_user.dart';
 import 'package:socketexample/services/navigation_service.dart';
 import 'package:socketexample/utils/routing/routes.dart';
@@ -74,6 +75,10 @@ class _ActiveUsersState extends State<ActiveUsers> {
           color: user.active ? Colors.green : Colors.red,
         ),
       ),
+      onTap: () {
+        sl<NavigationService>().navigateTo(privateChat, args: user.name);
+        sl<PrivateChatProvider>().createRoom(to: user.name);
+      },
     );
   }
 }
