@@ -112,7 +112,8 @@ class _GroupChatState extends State<GroupChat> {
   }
 
   Widget messageItem({Message message, bool showName}) {
-    bool isMine = message.sender == sl<LocalRepo>().getUser().data.name;
+    bool isMine = message.from == sl<LocalRepo>().getUser().data.name;
+
     return Row(
       mainAxisAlignment:
           isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -130,7 +131,7 @@ class _GroupChatState extends State<GroupChat> {
               ),
               Visibility(
                 visible: !isMine,
-                child: Text('${message.sender}'),
+                child: Text('${message.from}'),
               ),
               Card(
                 color: isMine ? Colors.blue : Colors.grey[200],
@@ -148,7 +149,7 @@ class _GroupChatState extends State<GroupChat> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    '${message.message}',
+                    '${message.msg}',
                     style: TextStyle(
                       color: isMine ? Colors.white : Colors.black,
                       fontSize: 18,

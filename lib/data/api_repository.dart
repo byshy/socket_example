@@ -61,8 +61,6 @@ class ApiRepo {
       print('e: ${e.response.toString()}');
     }
 
-    print('getActiveUsers response: ${response.data}');
-
     List<ActiveUser> users = List();
 
     if (response.statusCode == 200) {

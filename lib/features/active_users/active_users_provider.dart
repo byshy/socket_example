@@ -13,19 +13,15 @@ class ActiveUsersProvider with ChangeNotifier {
     sl<ApiRepo>().getActiveUsers().then((value) {
       if (value != null) {
         for (int i = 0; i < value.length; i++) {
-          _users[value[i].id] = value[i];
+          _users[value[i].email] = value[i];
         }
-        print('_users: ${_users.toString()}');
         notifyListeners();
-      } else {
-        print('_users value is null');
       }
     });
   }
 
   void addActiveUser(ActiveUser user) {
-    print('');
-    _users[user.id] = user;
+    _users[user.email] = user;
     notifyListeners();
   }
 }

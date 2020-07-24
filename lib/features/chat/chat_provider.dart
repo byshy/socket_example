@@ -27,32 +27,25 @@ class ChatProvider with ChangeNotifier {
   List<Message> get messages => _messages;
 
   void init() {
-    print('debugging: starting point');
     sl<SocketService>().socketIO.subscribe('public message', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
-      print('data: ${data.toString()}');
-      _messages.add(
-        Message(
-          message: data['msg'],
-          sender: data['from'],
-          sequential: _messages.last.sender == data['from'],
-        ),
-      );
+      Message message = Message.fromJson(data);
+      if (_messages.isNotEmpty) {
+        message.sequential = _messages.last.from == data['from'];
+      } else {
+        message.sequential = false;
+      }
+      _messages.add(message);
       notifyListeners();
     });
-    print('debugging: subscribed to public message');
     sl<SocketService>().socketIO.subscribe('activeuser', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
-      print('activeuser socket data: ${data.toString()}');
-      print('activeuser socket data: $jsonData');
-      sl<ActiveUsersProvider>().addActiveUser(ActiveUser.fromJson(jsonData));
+      sl<ActiveUsersProvider>().addActiveUser(ActiveUser.fromJson(data));
     });
-    print('debugging: subscribed to activeuser');
     sl<SocketService>().socketIO.connect();
   }
 
   void sendMessage() {
-    print('message: ${messageController.text}');
     sl<SocketService>().socketIO.sendMessage(
           'public message',
           json.encode({
