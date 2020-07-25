@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:socketexample/models/active_user.dart';
+import 'package:socketexample/utils/global_widgets/loading_indicator.dart';
 import 'package:socketexample/utils/global_widgets/message_item.dart';
 
 import '../../di.dart';
 import 'private_chat_provider.dart';
 
 class PrivateChat extends StatefulWidget {
-  final String username;
+  final ActiveUser user;
 
-  const PrivateChat({Key key, @required this.username}) : super(key: key);
+  const PrivateChat({Key key, @required this.user}) : super(key: key);
 
   @override
   _PrivateChatState createState() => _PrivateChatState();
@@ -26,10 +28,17 @@ class _PrivateChatState extends State<PrivateChat> {
     return Scaffold(
       key: sl<PrivateChatProvider>().privateScaffoldKey,
       appBar: AppBar(
-        title: Text('${widget.username}'),
+        title: Text('${widget.user}'),
       ),
       body: Consumer<PrivateChatProvider>(
         builder: (_, instance, child) {
+          if (!instance.isRoomCreated) {
+            return Center(
+              child: LoadingIndicator(
+                color: Colors.blue,
+              ),
+            );
+          }
           return Column(
             children: <Widget>[
               Expanded(
@@ -80,7 +89,7 @@ class _PrivateChatState extends State<PrivateChat> {
                         icon: Icon(Icons.send),
                         onPressed: sl<PrivateChatProvider>().isSendEnabled
                             ? () => sl<PrivateChatProvider>()
-                                .sendMessage(to: widget.username)
+                                .sendMessage(to: widget.user.email)
                             : null,
                       ),
                     ],

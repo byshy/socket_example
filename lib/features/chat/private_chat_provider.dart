@@ -28,9 +28,7 @@ class PrivateChatProvider with ChangeNotifier {
   void init() {
     sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
-      print('room creation data: $data');
-      if (data['status'] == 200) {
-        // TODO: display loading indicator
+      if (data['status'] == '200') {
         isRoomCreated = true;
         notifyListeners();
       }
@@ -39,22 +37,22 @@ class PrivateChatProvider with ChangeNotifier {
       Map<String, dynamic> data = json.decode(jsonData);
       Message message = Message.fromJson(data);
       if (_messages.isNotEmpty) {
-        message.sequential = _messages.last.from == data['from'];
+        message.sequential = _messages.last.from == message.from;
       } else {
         message.sequential = false;
       }
       _messages.add(message);
       notifyListeners();
+      displayLastMessage();
     });
     sl<SocketService>().socketIO.connect();
   }
 
   void createRoom({@required String to}) {
-    print('sending create room message');
     sl<SocketService>().socketIO.sendMessage(
           'create room',
           json.encode({
-            'from': sl<LocalRepo>().getUser().data.name,
+            'from': sl<LocalRepo>().getUser().data.email,
             'to': to,
           }),
         );
@@ -64,25 +62,28 @@ class PrivateChatProvider with ChangeNotifier {
     sl<SocketService>().socketIO.sendMessage(
           'private message',
           json.encode({
-            'msg': messageController.text,
-            'from': sl<LocalRepo>().getUser().data.name,
+            'msg': messageController.text.trim(),
+            'from': sl<LocalRepo>().getUser().data.email,
             'to': to,
           }),
         );
     messageController.text = '';
     isSendEnabled = false;
     notifyListeners();
-    if (_messages.isNotEmpty) {
-      scrollController.animateTo(
-        0.0,
-        duration: Duration(milliseconds: 600),
-        curve: Curves.ease,
-      );
-    }
   }
 
   void destroy() {
     scrollController.dispose();
     sl<SocketService>().socketIO.unSubscribe('private message');
+  }
+
+  void displayLastMessage() {
+    Future.delayed(Duration(milliseconds: 50)).then((value) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.ease,
+      );
+    });
   }
 }

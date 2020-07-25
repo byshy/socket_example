@@ -17,8 +17,6 @@ class ApiRepo {
       print('e: ${e.response.toString()}');
     }
 
-    print('login response: ${response.data}');
-
     User user;
 
     if (response.statusCode == 200) {
@@ -39,15 +37,11 @@ class ApiRepo {
       print('e: ${e.response.toString()}');
     }
 
-    print('signUp response: ${response.data}');
-
     User user;
 
     if (response.statusCode == 200) {
       user = User.fromJson(response.data);
     }
-
-    print('user: ${user.toString()}');
 
     return user;
   }

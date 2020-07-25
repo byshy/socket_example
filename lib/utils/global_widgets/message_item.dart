@@ -22,7 +22,7 @@ class _MessageItemState extends State<MessageItem> {
   @override
   void initState() {
     super.initState();
-    _isMine = widget.message.from == sl<LocalRepo>().getUser().data.name;
+    _isMine = widget.message.from == sl<LocalRepo>().getUser().data.email;
   }
 
   @override
@@ -37,14 +37,18 @@ class _MessageItemState extends State<MessageItem> {
         ),
         Flexible(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Visibility(
                 visible: !_isMine,
                 child: SizedBox(height: 8.0),
               ),
               Visibility(
-                visible: !_isMine,
-                child: Text('${widget.message.from}'),
+                visible: !_isMine && !widget.message.sequential,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text('${widget.message.from}'),
+                ),
               ),
               Card(
                 color: _isMine ? Colors.blue : Colors.grey[200],

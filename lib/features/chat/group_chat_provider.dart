@@ -31,12 +31,16 @@ class GroupChatProvider with ChangeNotifier {
       Map<String, dynamic> data = json.decode(jsonData);
       Message message = Message.fromJson(data);
       if (_messages.isNotEmpty) {
-        message.sequential = _messages.last.from == data['from'];
+        print('_messages.last.from: ${_messages.last.from}');
+        print('message.from: ${message.from}');
+        message.sequential = _messages.last.from == message.from;
       } else {
         message.sequential = false;
       }
+      print('message: ${message.toString()}');
       _messages.add(message);
       notifyListeners();
+      displayLastMessage();
     });
     sl<SocketService>().socketIO.subscribe('activeuser', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
@@ -49,25 +53,28 @@ class GroupChatProvider with ChangeNotifier {
     sl<SocketService>().socketIO.sendMessage(
           'public message',
           json.encode({
-            'msg': messageController.text,
-            'from': sl<LocalRepo>().getUser().data.name,
+            'msg': messageController.text.trim(),
+            'from': sl<LocalRepo>().getUser().data.email,
           }),
         );
     messageController.text = '';
     isSendEnabled = false;
     notifyListeners();
-    if (_messages.isNotEmpty) {
-      scrollController.animateTo(
-        0.0,
-        duration: Duration(milliseconds: 600),
-        curve: Curves.ease,
-      );
-    }
   }
 
   void destroy() {
     scrollController.dispose();
     sl<SocketService>().socketIO.unSubscribe('public message');
     sl<SocketService>().socketIO.unSubscribe('activeuser');
+  }
+
+  void displayLastMessage() {
+    Future.delayed(Duration(milliseconds: 50)).then((value) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.ease,
+      );
+    });
   }
 }

@@ -40,7 +40,7 @@ class Router {
         return MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             child: PrivateChat(
-              username: settings.arguments,
+              user: settings.arguments,
             ),
             value: sl<PrivateChatProvider>(),
           ),
