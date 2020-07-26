@@ -40,7 +40,7 @@ class GroupChatProvider with ChangeNotifier {
       print('message: ${message.toString()}');
       _messages.add(message);
       notifyListeners();
-      displayLastMessage();
+      animateToLastMessage();
     });
     sl<SocketService>().socketIO.subscribe('activeuser', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
@@ -68,7 +68,7 @@ class GroupChatProvider with ChangeNotifier {
     sl<SocketService>().socketIO.unSubscribe('activeuser');
   }
 
-  void displayLastMessage() {
+  void animateToLastMessage() {
     Future.delayed(Duration(milliseconds: 50)).then((value) {
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,

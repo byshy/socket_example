@@ -24,6 +24,12 @@ class _PrivateChatState extends State<PrivateChat> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    sl<PrivateChatProvider>().destroy();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: sl<PrivateChatProvider>().privateScaffoldKey,

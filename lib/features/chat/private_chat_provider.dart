@@ -15,6 +15,7 @@ class PrivateChatProvider with ChangeNotifier {
 
   bool isSendEnabled = false;
   bool isRoomCreated = false;
+  bool beenSubscribedBefore = false;
 
   void enableSend({bool enable}) {
     isSendEnabled = enable;
@@ -22,9 +23,7 @@ class PrivateChatProvider with ChangeNotifier {
   }
 
   Map<String, List<Message>> _messages = {};
-//  List<Message> _messages = List();
 
-//  List<Message> get messages => _messages;
   Map<String, List<Message>> get messages => _messages;
 
   String roomId;
@@ -42,19 +41,22 @@ class PrivateChatProvider with ChangeNotifier {
         notifyListeners();
       }
     });
-    sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
-      Map<String, dynamic> data = json.decode(jsonData);
-      print('message: $data');
-      Message message = Message.fromJson(data);
-      if (_messages[data['id']].isNotEmpty) {
-        message.sequential = _messages[data['id']].last.from == message.from;
-      } else {
-        message.sequential = false;
-      }
-      _messages[data['id']].add(message);
-      notifyListeners();
-      displayLastMessage();
-    });
+    if (!beenSubscribedBefore) {
+      sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
+        Map<String, dynamic> data = json.decode(jsonData);
+        print('message: $data');
+        Message message = Message.fromJson(data);
+        if (_messages[data['id']].isNotEmpty) {
+          message.sequential = _messages[data['id']].last.from == message.from;
+        } else {
+          message.sequential = false;
+        }
+        _messages[data['id']].add(message);
+        beenSubscribedBefore = true;
+        notifyListeners();
+        animateToLastMessage();
+      });
+    }
     sl<SocketService>().socketIO.connect();
   }
 
@@ -83,11 +85,10 @@ class PrivateChatProvider with ChangeNotifier {
   }
 
   void destroy() {
-    scrollController.dispose();
-    sl<SocketService>().socketIO.unSubscribe('private message');
+    sl<SocketService>().socketIO.unSubscribe('create room');
   }
 
-  void displayLastMessage() {
+  void animateToLastMessage() {
     Future.delayed(Duration(milliseconds: 50)).then((value) {
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,

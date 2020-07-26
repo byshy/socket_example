@@ -15,6 +15,14 @@ class ActiveUsers extends StatefulWidget {
 }
 
 class _ActiveUsersState extends State<ActiveUsers> {
+  String email;
+
+  @override
+  void initState() {
+    super.initState();
+    email = sl<LocalRepo>().getUser().data.email;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -40,8 +48,14 @@ class _ActiveUsersState extends State<ActiveUsers> {
                   padding: EdgeInsets.zero,
                   itemCount: instance.activeUsers.length,
                   itemBuilder: (context, index) {
+                    ActiveUser user =
+                        instance.activeUsers.values.toList()[index];
+                    if (user.email == email) {
+                      return SizedBox();
+                    }
+
                     return userItem(
-                      user: instance.activeUsers.values.toList()[index],
+                      user: user,
                     );
                   },
                 );
