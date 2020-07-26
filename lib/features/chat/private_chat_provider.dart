@@ -21,27 +21,37 @@ class PrivateChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Message> _messages = List();
+  Map<String, List<Message>> _messages = {};
+//  List<Message> _messages = List();
 
-  List<Message> get messages => _messages;
+//  List<Message> get messages => _messages;
+  Map<String, List<Message>> get messages => _messages;
+
+  String roomId;
 
   void init() {
     sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
       if (data['status'] == '200') {
+        roomId = data['id'];
+        print('room id: $roomId}');
+        if (messages[roomId] == null) {
+          messages[roomId] = List();
+        }
         isRoomCreated = true;
         notifyListeners();
       }
     });
     sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
+      print('message: $data');
       Message message = Message.fromJson(data);
-      if (_messages.isNotEmpty) {
-        message.sequential = _messages.last.from == message.from;
+      if (_messages[data['id']].isNotEmpty) {
+        message.sequential = _messages[data['id']].last.from == message.from;
       } else {
         message.sequential = false;
       }
-      _messages.add(message);
+      _messages[data['id']].add(message);
       notifyListeners();
       displayLastMessage();
     });
@@ -64,7 +74,7 @@ class PrivateChatProvider with ChangeNotifier {
           json.encode({
             'msg': messageController.text.trim(),
             'from': sl<LocalRepo>().getUser().data.email,
-            'to': to,
+            'id': roomId,
           }),
         );
     messageController.text = '';

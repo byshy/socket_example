@@ -28,7 +28,7 @@ class _PrivateChatState extends State<PrivateChat> {
     return Scaffold(
       key: sl<PrivateChatProvider>().privateScaffoldKey,
       appBar: AppBar(
-        title: Text('${widget.user}'),
+        title: Text('${widget.user.name}'),
       ),
       body: Consumer<PrivateChatProvider>(
         builder: (_, instance, child) {
@@ -49,10 +49,13 @@ class _PrivateChatState extends State<PrivateChat> {
                     : ListView.builder(
                         controller: sl<PrivateChatProvider>().scrollController,
                         padding: const EdgeInsets.only(bottom: 10),
-                        itemCount: instance.messages.length,
+                        itemCount: instance
+                            .messages[sl<PrivateChatProvider>().roomId].length,
                         itemBuilder: (context, index) {
                           return MessageItem(
-                            message: instance.messages[index],
+                            message: instance
+                                    .messages[sl<PrivateChatProvider>().roomId]
+                                [index],
                           );
                         },
                       ),
