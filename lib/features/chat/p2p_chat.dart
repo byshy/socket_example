@@ -66,6 +66,10 @@ class _PrivateChatState extends State<PrivateChat> {
                         },
                       ),
               ),
+              Visibility(
+                visible: instance.otherIsTyping,
+                child: Image.asset('assets/gifs/kermit_typing.gif'),
+              ),
               Container(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -81,6 +85,7 @@ class _PrivateChatState extends State<PrivateChat> {
                             FocusScope.of(context).requestFocus(FocusNode());
                           },
                           onChanged: (val) {
+                            sl<PrivateChatProvider>().sendIsTyping();
                             if (val.isEmpty) {
                               sl<PrivateChatProvider>()
                                   .enableSend(enable: false);
@@ -97,8 +102,7 @@ class _PrivateChatState extends State<PrivateChat> {
                       IconButton(
                         icon: Icon(Icons.send),
                         onPressed: sl<PrivateChatProvider>().isSendEnabled
-                            ? () => sl<PrivateChatProvider>()
-                                .sendMessage(to: widget.user.email)
+                            ? () => sl<PrivateChatProvider>().sendMessage()
                             : null,
                       ),
                     ],

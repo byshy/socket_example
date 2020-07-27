@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,7 @@ class PrivateChatProvider with ChangeNotifier {
   bool isSendEnabled = false;
   bool isRoomCreated = false;
   bool beenSubscribedBefore = false;
+  bool otherIsTyping = false;
 
   void enableSend({bool enable}) {
     isSendEnabled = enable;
@@ -27,6 +29,8 @@ class PrivateChatProvider with ChangeNotifier {
   Map<String, List<Message>> get messages => _messages;
 
   String roomId;
+
+  Timer _timer;
 
   void init() {
     sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
@@ -42,6 +46,7 @@ class PrivateChatProvider with ChangeNotifier {
       }
     });
     if (!beenSubscribedBefore) {
+      beenSubscribedBefore = true;
       sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
         Map<String, dynamic> data = json.decode(jsonData);
         print('message: $data');
@@ -52,9 +57,23 @@ class PrivateChatProvider with ChangeNotifier {
           message.sequential = false;
         }
         _messages[data['id']].add(message);
-        beenSubscribedBefore = true;
         notifyListeners();
         animateToLastMessage();
+      });
+      sl<SocketService>().socketIO.subscribe('typing', (jsonData) {
+        Map<String, dynamic> data = json.decode(jsonData);
+        print('message: $data');
+        if (data['from'] != sl<LocalRepo>().getUser().data.email) {
+          otherIsTyping = true;
+          notifyListeners();
+          if (_timer != null) {
+            _timer.cancel();
+          }
+          _timer = Timer(Duration(seconds: 1), () {
+            otherIsTyping = false;
+            notifyListeners();
+          });
+        }
       });
     }
     sl<SocketService>().socketIO.connect();
@@ -70,7 +89,7 @@ class PrivateChatProvider with ChangeNotifier {
         );
   }
 
-  void sendMessage({String to}) {
+  void sendMessage() {
     sl<SocketService>().socketIO.sendMessage(
           'private message',
           json.encode({
@@ -96,5 +115,15 @@ class PrivateChatProvider with ChangeNotifier {
         curve: Curves.ease,
       );
     });
+  }
+
+  void sendIsTyping() {
+    sl<SocketService>().socketIO.sendMessage(
+          'typing',
+          json.encode({
+            'from': sl<LocalRepo>().getUser().data.email,
+            'id': roomId,
+          }),
+        );
   }
 }
