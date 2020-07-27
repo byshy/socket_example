@@ -67,6 +67,7 @@ Future<void> init() async {
     },
   );
   socketIO.init();
+  socketIO.connect();
   sl.registerLazySingleton<SocketIO>(() => socketIO);
 
   sl.registerLazySingleton(() => LoginProvider());

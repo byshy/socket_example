@@ -33,18 +33,6 @@ class PrivateChatProvider with ChangeNotifier {
   Timer _timer;
 
   void init() {
-    sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
-      Map<String, dynamic> data = json.decode(jsonData);
-      if (data['status'] == '200') {
-        roomId = data['id'];
-        print('room id: $roomId}');
-        if (messages[roomId] == null) {
-          messages[roomId] = List();
-        }
-        isRoomCreated = true;
-        notifyListeners();
-      }
-    });
     if (!beenSubscribedBefore) {
       beenSubscribedBefore = true;
       sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
@@ -76,10 +64,11 @@ class PrivateChatProvider with ChangeNotifier {
         }
       });
     }
-    sl<SocketService>().socketIO.connect();
   }
 
   void createRoom({@required String to}) {
+    isRoomCreated = false;
+    notifyListeners();
     sl<SocketService>().socketIO.sendMessage(
           'create room',
           json.encode({
@@ -101,10 +90,6 @@ class PrivateChatProvider with ChangeNotifier {
     messageController.text = '';
     isSendEnabled = false;
     notifyListeners();
-  }
-
-  void destroy() {
-    sl<SocketService>().socketIO.unSubscribe('create room');
   }
 
   void animateToLastMessage() {

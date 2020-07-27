@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/features/active_users/active_users_provider.dart';
+import 'package:socketexample/features/chat/private_chat_provider.dart';
 import 'package:socketexample/models/active_user.dart';
 import 'package:socketexample/models/message.dart';
 import 'package:socketexample/services/socket_service.dart';
@@ -31,22 +32,31 @@ class GroupChatProvider with ChangeNotifier {
       Map<String, dynamic> data = json.decode(jsonData);
       Message message = Message.fromJson(data);
       if (_messages.isNotEmpty) {
-        print('_messages.last.from: ${_messages.last.from}');
-        print('message.from: ${message.from}');
         message.sequential = _messages.last.from == message.from;
       } else {
         message.sequential = false;
       }
-      print('message: ${message.toString()}');
       _messages.add(message);
       notifyListeners();
       animateToLastMessage();
+    });
+    sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
+      Map<String, dynamic> data = json.decode(jsonData);
+      if (data['status'] == '200') {
+        var temp = sl<PrivateChatProvider>();
+        temp.roomId = data['id'];
+        print('room id: ${temp.roomId}}');
+        if (temp.messages[sl<PrivateChatProvider>().roomId] == null) {
+          temp.messages[temp.roomId] = List();
+        }
+        temp.isRoomCreated = true;
+        temp.notifyListeners();
+      }
     });
     sl<SocketService>().socketIO.subscribe('activeuser', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
       sl<ActiveUsersProvider>().addActiveUser(ActiveUser.fromJson(data));
     });
-    sl<SocketService>().socketIO.connect();
   }
 
   void sendMessage() {
