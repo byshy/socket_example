@@ -40,6 +40,26 @@ class GroupChatProvider with ChangeNotifier {
       notifyListeners();
       animateToLastMessage();
     });
+    sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
+      Map<String, dynamic> data = json.decode(jsonData);
+      print('message: $data');
+      Message message = Message.fromJson(data);
+      var temp = sl<PrivateChatProvider>();
+      if (temp.messages[data['id']] == null) {
+        temp.messages[data['id']] = List();
+        temp.createRoom(to: data['from'], toID: data['fromID']);
+      } else {
+        if (temp.messages[data['id']].isNotEmpty) {
+          message.sequential =
+              temp.messages[data['id']].last.from == message.from;
+        } else {
+          message.sequential = false;
+        }
+        temp.messages[data['id']].add(message);
+        temp.notifyListeners();
+        temp.animateToLastMessage();
+      }
+    });
     sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
       if (data['status'] == '200') {

@@ -35,19 +35,6 @@ class PrivateChatProvider with ChangeNotifier {
   void init() {
     if (!beenSubscribedBefore) {
       beenSubscribedBefore = true;
-      sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
-        Map<String, dynamic> data = json.decode(jsonData);
-        print('message: $data');
-        Message message = Message.fromJson(data);
-        if (_messages[data['id']].isNotEmpty) {
-          message.sequential = _messages[data['id']].last.from == message.from;
-        } else {
-          message.sequential = false;
-        }
-        _messages[data['id']].add(message);
-        notifyListeners();
-        animateToLastMessage();
-      });
       sl<SocketService>().socketIO.subscribe('typing', (jsonData) {
         Map<String, dynamic> data = json.decode(jsonData);
         print('message: $data');
@@ -66,7 +53,7 @@ class PrivateChatProvider with ChangeNotifier {
     }
   }
 
-  void createRoom({@required String to}) {
+  void createRoom({@required String to, @required String toID}) {
     isRoomCreated = false;
     notifyListeners();
     sl<SocketService>().socketIO.sendMessage(
@@ -74,6 +61,7 @@ class PrivateChatProvider with ChangeNotifier {
           json.encode({
             'from': sl<LocalRepo>().getUser().data.email,
             'to': to,
+            'toID': toID,
           }),
         );
   }
@@ -94,11 +82,15 @@ class PrivateChatProvider with ChangeNotifier {
 
   void animateToLastMessage() {
     Future.delayed(Duration(milliseconds: 50)).then((value) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 200),
-        curve: Curves.ease,
-      );
+      try {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.ease,
+        );
+      } catch (e) {
+        print('scrollController is not attached to a scrollable view');
+      }
     });
   }
 
