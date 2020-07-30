@@ -63,7 +63,9 @@ Future<void> init() async {
                 'email': sl<LocalRepo>().getUser().data.email,
               }),
             );
-      }
+      } else if (data == 'reconnecting') {
+      } else if (data == 'connect_error') {
+      } else if (data == 'reconnect_error') {}
     },
   );
   socketIO.init();

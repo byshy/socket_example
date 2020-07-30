@@ -91,6 +91,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
       ),
       onTap: () {
         sl<NavigationService>().navigateTo(privateChat, args: user);
+        print('user.id: ${user.id}');
         sl<PrivateChatProvider>().createRoom(to: user.email, toID: user.id);
       },
     );

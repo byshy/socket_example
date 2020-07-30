@@ -42,11 +42,15 @@ class GroupChatProvider with ChangeNotifier {
     });
     sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
+      print('inside private message');
       print('message: $data');
       Message message = Message.fromJson(data);
       var temp = sl<PrivateChatProvider>();
+      print('temp.messages[data[id]]: ${temp.messages[data['id']].toString()}');
       if (temp.messages[data['id']] == null) {
         temp.messages[data['id']] = List();
+        message.sequential = false;
+        print('data[fromID]: ${data['fromID']}');
         temp.createRoom(to: data['from'], toID: data['fromID']);
       } else {
         if (temp.messages[data['id']].isNotEmpty) {
@@ -55,10 +59,17 @@ class GroupChatProvider with ChangeNotifier {
         } else {
           message.sequential = false;
         }
-        temp.messages[data['id']].add(message);
-        temp.notifyListeners();
-        temp.animateToLastMessage();
       }
+      temp.messages[data['id']].add(message);
+      temp.notifyListeners();
+      temp.animateToLastMessage();
+    });
+    sl<SocketService>().socketIO.subscribe('join room', (jsonData) {
+      Map<String, dynamic> data = json.decode(jsonData);
+      sl<SocketService>().socketIO.sendMessage(
+            'join room',
+            json.encode(data),
+          );
     });
     sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
