@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_socket_io/flutter_socket_io.dart';
 import 'package:flutter_socket_io/socket_io_manager.dart';
 import 'package:get_it/get_it.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socketexample/features/login/login_provider.dart';
 import 'package:socketexample/services/socket_service.dart';
@@ -21,6 +22,8 @@ import 'services/navigation_service.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  initOneSignal();
+
   sl.registerLazySingleton<LocalRepo>(
     () => LocalRepo(
       sharedPreferences: sl(),
@@ -87,4 +90,21 @@ void refreshToken() {
   final String token = sl<LocalRepo>().getUser()?.token;
   sl<ApiRepo>().client.options.headers = {'x-auth-token': token};
   print('token: $token');
+}
+
+void initOneSignal() async {
+  OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+  OneSignal.shared.init(
+    "929ad80f-b7bc-4fff-939c-55f305151323",
+    iOSSettings: {
+      OSiOSSettings.autoPrompt: false,
+      OSiOSSettings.inAppLaunchUrl: false,
+    },
+  );
+  OneSignal.shared.setInFocusDisplayType(
+    OSNotificationDisplayType.notification,
+  );
+  await OneSignal.shared.promptUserForPushNotificationPermission(
+    fallbackToSettings: true,
+  );
 }
