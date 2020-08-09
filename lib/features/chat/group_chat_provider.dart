@@ -79,7 +79,8 @@ class GroupChatProvider with ChangeNotifier {
             roomID: temp.roomId,
           );
           temp.messages[temp.roomId] = List();
-          for (Message m in page.messages) {
+          for (int index = page.messages.length - 1; index > -1; index--) {
+            Message m = page.messages[index];
             if (temp.messages[temp.roomId].isEmpty) {
               m.sequential = false;
             } else {
@@ -92,7 +93,7 @@ class GroupChatProvider with ChangeNotifier {
 
             print('message: ${m.toString()}');
 
-            temp.messages[temp.roomId].insert(0, m);
+            temp.messages[temp.roomId].add(m);
           }
         }
         temp.isRoomCreated = true;
