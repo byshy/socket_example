@@ -1,27 +1,27 @@
 import 'message.dart';
 
 class MessagesPage {
-  int index;
+  String status;
   List<Message> messages;
 
-  MessagesPage({this.index, this.messages});
+  MessagesPage({this.status, this.messages});
 
   MessagesPage.fromJson(Map<String, dynamic> json) {
-    index = json['index'];
-    if (json['messages'] != null) {
+    if (json['data'] != null) {
       messages = new List<Message>();
-      json['messages'].forEach((v) {
+      json['data'].forEach((v) {
         messages.add(new Message.fromJson(v));
       });
     }
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['index'] = this.index;
     if (this.messages != null) {
-      data['messages'] = this.messages.map((v) => v.toJson()).toList();
+      data['data'] = this.messages.map((v) => v.toJson()).toList();
     }
+    data['status'] = this.status;
     return data;
   }
 }

@@ -67,17 +67,17 @@ class ApiRepo {
     return users;
   }
 
-  Future<MessagesPage> getChatPage({int index, String roomID}) async {
+  Future<MessagesPage> getChatPage({int skip, String roomID}) async {
     Response response;
 
-    print('index: $index');
+    print('skip: $skip');
     print('roomID: $roomID');
 
     try {
       response = await client.post(
         'messages',
         data: {
-          'index': index,
+          'skip': skip,
           'room': roomID,
         },
       );
@@ -89,7 +89,7 @@ class ApiRepo {
 
     print('old messages response: ${response.data}');
 
-    if (response.statusCode == 200) {
+    if (response.data['status'] == "200") {
       messagesPage = MessagesPage.fromJson(response.data);
     }
 

@@ -8,6 +8,7 @@ import 'package:socketexample/features/active_users/active_users_provider.dart';
 import 'package:socketexample/features/chat/private_chat_provider.dart';
 import 'package:socketexample/models/active_user.dart';
 import 'package:socketexample/models/message.dart';
+import 'package:socketexample/models/messages_page.dart';
 import 'package:socketexample/services/socket_service.dart';
 
 import '../../di.dart';
@@ -68,16 +69,31 @@ class GroupChatProvider with ChangeNotifier {
             json.encode(data),
           );
     });
-    sl<SocketService>().socketIO.subscribe('create room', (jsonData) {
+    sl<SocketService>().socketIO.subscribe('create room', (jsonData) async {
       Map<String, dynamic> data = json.decode(jsonData);
       if (data['status'] == '200') {
         var temp = sl<PrivateChatProvider>();
         temp.roomId = data['id'];
-        sl<ApiRepo>().getChatPage(
-          roomID: temp.roomId,
-        );
-        if (temp.messages[sl<PrivateChatProvider>().roomId] == null) {
+        if (temp.messages[temp.roomId] == null) {
+          MessagesPage page = await sl<ApiRepo>().getChatPage(
+            roomID: temp.roomId,
+          );
           temp.messages[temp.roomId] = List();
+          for (Message m in page.messages) {
+            if (temp.messages[temp.roomId].isEmpty) {
+              m.sequential = false;
+            } else {
+              if (temp.messages[temp.roomId].last.from == m.from) {
+                m.sequential = true;
+              } else {
+                m.sequential = false;
+              }
+            }
+
+            print('message: ${m.toString()}');
+
+            temp.messages[temp.roomId].insert(0, m);
+          }
         }
         temp.isRoomCreated = true;
         temp.notifyListeners();
