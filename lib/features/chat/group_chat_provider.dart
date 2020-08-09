@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:socketexample/data/api_repository.dart';
 import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/features/active_users/active_users_provider.dart';
 import 'package:socketexample/features/chat/private_chat_provider.dart';
@@ -42,25 +43,21 @@ class GroupChatProvider with ChangeNotifier {
     });
     sl<SocketService>().socketIO.subscribe('private message', (jsonData) {
       Map<String, dynamic> data = json.decode(jsonData);
-      print('inside private message');
-      print('message: $data');
       Message message = Message.fromJson(data);
       var temp = sl<PrivateChatProvider>();
-      print('temp.messages[data[id]]: ${temp.messages[data['id']].toString()}');
-      if (temp.messages[data['id']] == null) {
-        temp.messages[data['id']] = List();
+      if (temp.messages[data['roomID']] == null) {
+        temp.messages[data['roomID']] = List();
         message.sequential = false;
-        print('data[fromID]: ${data['fromID']}');
         temp.createRoom(to: data['from'], toID: data['fromID']);
       } else {
-        if (temp.messages[data['id']].isNotEmpty) {
+        if (temp.messages[data['roomID']].isNotEmpty) {
           message.sequential =
-              temp.messages[data['id']].last.from == message.from;
+              temp.messages[data['roomID']].last.from == message.from;
         } else {
           message.sequential = false;
         }
       }
-      temp.messages[data['id']].add(message);
+      temp.messages[data['roomID']].add(message);
       temp.notifyListeners();
       temp.animateToLastMessage();
     });
@@ -76,7 +73,9 @@ class GroupChatProvider with ChangeNotifier {
       if (data['status'] == '200') {
         var temp = sl<PrivateChatProvider>();
         temp.roomId = data['id'];
-        print('room id: ${temp.roomId}}');
+        sl<ApiRepo>().getChatPage(
+          roomID: temp.roomId,
+        );
         if (temp.messages[sl<PrivateChatProvider>().roomId] == null) {
           temp.messages[temp.roomId] = List();
         }

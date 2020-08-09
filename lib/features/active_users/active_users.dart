@@ -29,7 +29,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
       child: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 24),
             color: Theme.of(context).colorScheme.primary,
             child: ListTile(
               title: Text(
@@ -91,7 +91,6 @@ class _ActiveUsersState extends State<ActiveUsers> {
       ),
       onTap: () {
         sl<NavigationService>().navigateTo(privateChat, args: user);
-        print('user.id: ${user.id}');
         sl<PrivateChatProvider>().createRoom(to: user.email, toID: user.id);
       },
     );

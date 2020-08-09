@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:socketexample/models/active_user.dart';
+import 'package:socketexample/models/messages_page.dart';
 import 'package:socketexample/models/user.dart';
 
 class ApiRepo {
@@ -22,8 +23,6 @@ class ApiRepo {
     if (response.statusCode == 200) {
       user = User.fromJson(response.data);
     }
-
-    print('user: ${user.toString()}');
 
     return user;
   }
@@ -59,7 +58,6 @@ class ApiRepo {
 
     if (response.statusCode == 200) {
       response.data['data'].forEach((v) {
-        print('users: ${v.toString()}');
         if (v != null) {
           users.add(ActiveUser.fromJson(v));
         }
@@ -67,5 +65,34 @@ class ApiRepo {
     }
 
     return users;
+  }
+
+  Future<MessagesPage> getChatPage({int index, String roomID}) async {
+    Response response;
+
+    print('index: $index');
+    print('roomID: $roomID');
+
+    try {
+      response = await client.post(
+        'messages',
+        data: {
+          'index': index,
+          'room': roomID,
+        },
+      );
+    } on DioError catch (e) {
+      print('e: ${e.response.toString()}');
+    }
+
+    MessagesPage messagesPage;
+
+    print('old messages response: ${response.data}');
+
+    if (response.statusCode == 200) {
+      messagesPage = MessagesPage.fromJson(response.data);
+    }
+
+    return messagesPage;
   }
 }

@@ -30,7 +30,6 @@ class SignUpProvider with ChangeNotifier {
         ),
       );
     } else {
-      print('name: ${emailController.text}');
       isSignUpLoading = true;
       notifyListeners();
       sl<ApiRepo>().signUp(data: {

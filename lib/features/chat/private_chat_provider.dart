@@ -54,7 +54,6 @@ class PrivateChatProvider with ChangeNotifier {
   }
 
   void createRoom({@required String to, @required String toID}) {
-    print('toID: $toID');
     isRoomCreated = false;
     notifyListeners();
     sl<SocketService>().socketIO.sendMessage(
@@ -73,7 +72,7 @@ class PrivateChatProvider with ChangeNotifier {
           json.encode({
             'msg': messageController.text.trim(),
             'from': sl<LocalRepo>().getUser().data.email,
-            'id': roomId,
+            'roomID': roomId,
           }),
         );
     messageController.text = '';
@@ -100,7 +99,7 @@ class PrivateChatProvider with ChangeNotifier {
           'typing',
           json.encode({
             'from': sl<LocalRepo>().getUser().data.email,
-            'id': roomId,
+            'roomID': roomId,
           }),
         );
   }

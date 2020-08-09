@@ -53,6 +53,7 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<Dio>(() => client);
 
+  // TODO: display socket status to the user.
   SocketIO socketIO = SocketIOManager().createSocketIO(
     'https://nour-chat.herokuapp.com',
     '/admin',

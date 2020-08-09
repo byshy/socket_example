@@ -26,7 +26,6 @@ class LoginProvider with ChangeNotifier {
         ),
       );
     } else {
-      print('name: ${emailController.text}');
       isLoginLoading = true;
       notifyListeners();
       sl<ApiRepo>().login(data: {
