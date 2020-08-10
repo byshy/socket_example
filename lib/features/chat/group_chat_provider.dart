@@ -91,8 +91,6 @@ class GroupChatProvider with ChangeNotifier {
               }
             }
 
-            print('message: ${m.toString()}');
-
             temp.messages[temp.roomId].add(m);
           }
         }

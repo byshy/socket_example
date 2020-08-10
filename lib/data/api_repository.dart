@@ -87,8 +87,6 @@ class ApiRepo {
 
     MessagesPage messagesPage;
 
-    print('old messages response: ${response.data}');
-
     if (response.data['status'] == "200") {
       messagesPage = MessagesPage.fromJson(response.data);
     }

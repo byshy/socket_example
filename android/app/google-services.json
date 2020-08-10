@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "548251973281",
+    "firebase_url": "https://memerschat.firebaseio.com",
+    "project_id": "memerschat",
+    "storage_bucket": "memerschat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548251973281:android:6d9deeefbe118030f722e0",
+        "android_client_info": {
+          "package_name": "com.basel.socketexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "548251973281-g9hm9o7evrs4hiec5hfd06djafrpd0m4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.basel.socketexample",
+            "certificate_hash": "36bd0113e450578534422162c63f4f3fef0baf1c"
+          }
+        },
+        {
+          "client_id": "548251973281-m2cnr8iq63dte1lnlnpddes0f8t22lrn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTeYuitjK4HeOpS4MxIoMTDAfc5o_qHeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "548251973281-m2cnr8iq63dte1lnlnpddes0f8t22lrn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

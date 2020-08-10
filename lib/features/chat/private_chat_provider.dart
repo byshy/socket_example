@@ -37,7 +37,6 @@ class PrivateChatProvider with ChangeNotifier {
       beenSubscribedBefore = true;
       sl<SocketService>().socketIO.subscribe('typing', (jsonData) {
         Map<String, dynamic> data = json.decode(jsonData);
-        print('message: $data');
         if (data['from'] != sl<LocalRepo>().getUser().data.email) {
           otherIsTyping = true;
           notifyListeners();
