@@ -81,11 +81,17 @@ class PrivateChatProvider with ChangeNotifier {
       );
       for (int index = page.messages.length - 1; index > -1; index--) {
         Message m = page.messages[index];
-        if (messages[roomId].last.from == m.from) {
-          m.sequential = true;
-        } else {
+        if (index == page.messages.length - 1) {
           m.sequential = false;
+        } else {
+          if (messages[roomId][0].from == m.from) {
+            m.sequential = true;
+          } else {
+            m.sequential = false;
+          }
         }
+
+        print('message: ${m.toString()}');
 
         messages[roomId].insert(page.messages.length - 1 - index, m);
 
