@@ -96,6 +96,9 @@ class GroupChatProvider with ChangeNotifier {
         }
         temp.isRoomCreated = true;
         temp.notifyListeners();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          temp.getDimensions();
+        });
       }
     });
     sl<SocketService>().socketIO.subscribe('activeuser', (jsonData) {

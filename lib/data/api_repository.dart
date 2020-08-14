@@ -70,9 +70,6 @@ class ApiRepo {
   Future<MessagesPage> getChatPage({int skip, String roomID}) async {
     Response response;
 
-    print('skip: $skip');
-    print('roomID: $roomID');
-
     try {
       response = await client.post(
         'messages',

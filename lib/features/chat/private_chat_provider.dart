@@ -3,8 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:socketexample/data/api_repository.dart';
 import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/models/message.dart';
+import 'package:socketexample/models/messages_page.dart';
 import 'package:socketexample/services/socket_service.dart';
 
 import '../../di.dart';
@@ -13,6 +15,10 @@ class PrivateChatProvider with ChangeNotifier {
   GlobalKey<ScaffoldState> privateScaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
+
+  final GlobalKey messagesListKey = GlobalKey();
+  final GlobalKey appBarKey = GlobalKey();
+  final GlobalKey bottomRowKey = GlobalKey();
 
   bool isSendEnabled = false;
   bool isRoomCreated = false;
@@ -52,6 +58,45 @@ class PrivateChatProvider with ChangeNotifier {
     }
   }
 
+  void getDimensions() async {
+    final RenderBox messagesListRenderBox =
+        messagesListKey.currentContext.findRenderObject();
+    final RenderBox appBarRenderBox =
+        appBarKey.currentContext.findRenderObject();
+    final RenderBox bottomRowRenderBox =
+        bottomRowKey.currentContext.findRenderObject();
+    final RenderBox privateScaffoldRenderBox =
+        privateScaffoldKey.currentContext.findRenderObject();
+
+    final double privateScaffoldHeight = privateScaffoldRenderBox.size.height;
+
+    final double totalContentHeight = messagesListRenderBox.size.height +
+        appBarRenderBox.size.height +
+        bottomRowRenderBox.size.height;
+
+    if (totalContentHeight <= privateScaffoldHeight) {
+      MessagesPage page = await sl<ApiRepo>().getChatPage(
+        roomID: roomId,
+        skip: messages[roomId].length,
+      );
+      for (int index = page.messages.length - 1; index > -1; index--) {
+        Message m = page.messages[index];
+        if (messages[roomId].last.from == m.from) {
+          m.sequential = true;
+        } else {
+          m.sequential = false;
+        }
+
+        messages[roomId].insert(page.messages.length - 1 - index, m);
+
+        if (index == 0) {
+          notifyListeners();
+          animateToLastMessage(milliseconds: 70);
+        }
+      }
+    }
+  }
+
   void createRoom({@required String to, @required String toID}) {
     isRoomCreated = false;
     notifyListeners();
@@ -79,8 +124,8 @@ class PrivateChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void animateToLastMessage() {
-    Future.delayed(Duration(milliseconds: 50)).then((value) {
+  void animateToLastMessage({int milliseconds}) {
+    Future.delayed(Duration(milliseconds: milliseconds ?? 50)).then((value) {
       try {
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,

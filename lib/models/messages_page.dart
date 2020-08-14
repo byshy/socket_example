@@ -24,4 +24,9 @@ class MessagesPage {
     data['status'] = this.status;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'messages: ${messages.toString()}';
+  }
 }

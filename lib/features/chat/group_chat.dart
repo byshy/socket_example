@@ -30,6 +30,7 @@ class _GroupChatState extends State<GroupChat> {
       ),
       appBar: AppBar(
         title: Text('the memers 🤜🤛'),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.info_outline),
