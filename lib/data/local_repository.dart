@@ -11,10 +11,19 @@ class LocalRepo {
   LocalRepo({@required this.sharedPreferences});
 
   static const String USER = 'user';
+  static const String FIREBASE_TOKEN = 'firebase_token';
+
+  Future<void> setFirebaseToken(String token) async {
+    await sharedPreferences.setString(FIREBASE_TOKEN, token);
+  }
+
+  String getFirebaseToken() {
+    return sharedPreferences.getString(FIREBASE_TOKEN);
+  }
 
   Future<void> setUser(User user) async {
     String userJson = jsonEncode(user);
-    return await sharedPreferences.setString(USER, userJson);
+    await sharedPreferences.setString(USER, userJson);
   }
 
   User getUser() {

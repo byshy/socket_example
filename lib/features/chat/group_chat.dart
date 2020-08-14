@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/features/active_users/active_users.dart';
 import 'package:socketexample/features/active_users/active_users_provider.dart';
 import 'package:socketexample/features/chat/group_chat_provider.dart';
@@ -13,11 +15,32 @@ class GroupChat extends StatefulWidget {
 }
 
 class _GroupChatState extends State<GroupChat> {
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
   @override
   void initState() {
     super.initState();
     sl<GroupChatProvider>().init();
     sl<ActiveUsersProvider>().getActiveUsers();
+    getToken();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+      },
+//      onBackgroundMessage: myBackgroundMessageHandler,
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+      },
+    );
+  }
+
+  void getToken() async {
+    String token = await _firebaseMessaging.getToken();
+    sl<LocalRepo>().setFirebaseToken(token);
+    print('firebase token: $token');
   }
 
   @override

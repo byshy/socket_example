@@ -56,12 +56,15 @@ Future<void> init() async {
     '/admin',
     socketStatusCallback: (dynamic data) {
       print("Socket status: " + data);
+      String token = sl<LocalRepo>().getFirebaseToken();
+      print('token from di: $token');
       if (data == 'connect') {
         sl<SocketService>().socketIO.sendMessage(
               'data',
               json.encode({
                 'name': sl<LocalRepo>().getUser().data.name,
                 'email': sl<LocalRepo>().getUser().data.email,
+                'token': token,
               }),
             );
       } else if (data == 'reconnecting') {
@@ -69,6 +72,7 @@ Future<void> init() async {
       } else if (data == 'reconnect_error') {}
     },
   );
+
   socketIO.init();
   socketIO.connect();
   sl.registerLazySingleton<SocketIO>(() => socketIO);

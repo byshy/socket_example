@@ -100,7 +100,9 @@ class _PrivateChatState extends State<PrivateChat> {
                       IconButton(
                         icon: Icon(Icons.send),
                         onPressed: sl<PrivateChatProvider>().isSendEnabled
-                            ? () => sl<PrivateChatProvider>().sendMessage()
+                            ? () => sl<PrivateChatProvider>().sendMessage(
+                                  email: widget.user.email,
+                                )
                             : null,
                       ),
                     ],

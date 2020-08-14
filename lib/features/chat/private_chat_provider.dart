@@ -116,13 +116,14 @@ class PrivateChatProvider with ChangeNotifier {
         );
   }
 
-  void sendMessage() {
+  void sendMessage({String email}) {
     sl<SocketService>().socketIO.sendMessage(
           'private message',
           json.encode({
             'msg': messageController.text.trim(),
             'from': sl<LocalRepo>().getUser().data.email,
             'roomID': roomId,
+            'to': email,
           }),
         );
     messageController.text = '';
