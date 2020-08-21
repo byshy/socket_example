@@ -47,20 +47,30 @@ class _PrivateChatState extends State<PrivateChat> {
                     ? Center(
                         child: Text('No messages yet'),
                       )
-                    : ListView.builder(
-                        key: sl<PrivateChatProvider>().messagesListKey,
-                        shrinkWrap: true,
+                    : ListView(
                         controller: sl<PrivateChatProvider>().scrollController,
                         padding: const EdgeInsets.only(bottom: 10),
-                        itemCount: instance
-                            .messages[sl<PrivateChatProvider>().roomId].length,
-                        itemBuilder: (context, index) {
-                          return MessageItem(
-                            message: instance
-                                    .messages[sl<PrivateChatProvider>().roomId]
-                                [index],
-                          );
-                        },
+                        shrinkWrap: true,
+                        children: [
+                          Column(
+                            key: sl<PrivateChatProvider>().messagesListKey,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (int index = instance
+                                          .messages[
+                                              sl<PrivateChatProvider>().roomId]
+                                          .length -
+                                      1;
+                                  index >= 0;
+                                  index--)
+                                MessageItem(
+                                  key: Key('private_message_$index'),
+                                  message: instance.messages[
+                                      sl<PrivateChatProvider>().roomId][index],
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
               ),
               Visibility(

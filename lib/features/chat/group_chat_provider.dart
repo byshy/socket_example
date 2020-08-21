@@ -58,7 +58,7 @@ class GroupChatProvider with ChangeNotifier {
           message.sequential = false;
         }
       }
-      temp.messages[data['roomID']].add(message);
+      temp.messages[data['roomID']].insert(0, message);
       temp.notifyListeners();
       temp.animateToLastMessage();
     });
@@ -79,16 +79,17 @@ class GroupChatProvider with ChangeNotifier {
             roomID: temp.roomId,
           );
           temp.messages[temp.roomId] = List();
-          for (int index = page.messages.length - 1; index > -1; index--) {
+          for (int index = 0; index < page.messages.length; index++) {
             Message m = page.messages[index];
-            if (temp.messages[temp.roomId].isEmpty) {
-              m.sequential = false;
-            } else {
-              if (temp.messages[temp.roomId].last.from == m.from) {
+
+            try {
+              if (page.messages[index + 1].from == m.from) {
                 m.sequential = true;
               } else {
                 m.sequential = false;
               }
+            } catch (_) {
+              m.sequential = false;
             }
 
             temp.messages[temp.roomId].add(m);

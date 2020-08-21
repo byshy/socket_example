@@ -74,32 +74,42 @@ class PrivateChatProvider with ChangeNotifier {
         appBarRenderBox.size.height +
         bottomRowRenderBox.size.height;
 
+    print('messagesListRenderBox: ${messagesListRenderBox.size.height}');
+
     if (totalContentHeight <= privateScaffoldHeight) {
       MessagesPage page = await sl<ApiRepo>().getChatPage(
         roomID: roomId,
-        skip: messages[roomId].length,
+        skip: _messages[roomId].length,
       );
-      for (int index = page.messages.length - 1; index > -1; index--) {
+      for (int index = 0; index < page.messages.length; index++) {
         Message m = page.messages[index];
-        if (index == page.messages.length - 1) {
-          m.sequential = false;
-        } else {
-          if (messages[roomId][0].from == m.from) {
-            m.sequential = true;
-          } else {
-            m.sequential = false;
+
+        if (index == 0) {
+          Message temp = _messages[roomId].last;
+          if (m.from == temp.from) {
+            temp.sequential = true;
           }
         }
 
-        print('message: ${m.toString()}');
+        _messages[roomId].add(m);
 
-        messages[roomId].insert(page.messages.length - 1 - index, m);
+        try {
+          if (page.messages[index + 1].from == m.from) {
+            _messages[roomId].last.sequential = true;
+          } else {
+            _messages[roomId].last.sequential = false;
+          }
+        } catch (_) {
+          _messages[roomId].last.sequential = false;
+        }
 
-        if (index == 0) {
+        if (index == page.messages.length - 1) {
           notifyListeners();
-          animateToLastMessage(milliseconds: 70);
+          animateToLastMessage();
         }
       }
+    } else {
+      animateToLastMessage();
     }
   }
 

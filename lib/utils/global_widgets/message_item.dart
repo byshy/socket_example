@@ -17,22 +17,14 @@ class MessageItem extends StatefulWidget {
 }
 
 class _MessageItemState extends State<MessageItem> {
-  bool _isMine;
-
-  @override
-  void initState() {
-    super.initState();
-    _isMine = widget.message.from == sl<LocalRepo>().getUser().data.email;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment:
-          _isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+          isMine() ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: <Widget>[
         Visibility(
-          visible: _isMine,
+          visible: isMine(),
           child: SizedBox(width: 60),
         ),
         Flexible(
@@ -40,22 +32,22 @@ class _MessageItemState extends State<MessageItem> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Visibility(
-                visible: !_isMine,
+                visible: !isMine(),
                 child: SizedBox(height: 8.0),
               ),
               Visibility(
-                visible: !_isMine && !widget.message.sequential,
+                visible: !isMine() && !widget.message.sequential,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text('${widget.message.from}'),
                 ),
               ),
               Card(
-                color: _isMine ? Colors.blue : Colors.grey[200],
+                color: isMine() ? Colors.blue : Colors.grey[200],
                 margin: EdgeInsets.only(
                   left: 8.0,
                   right: 8.0,
-                  top: _isMine ? 8.0 : 0.0,
+                  top: isMine() ? 8.0 : 0.0,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
@@ -68,7 +60,7 @@ class _MessageItemState extends State<MessageItem> {
                   child: Text(
                     '${widget.message.msg}',
                     style: TextStyle(
-                      color: _isMine ? Colors.white : Colors.black,
+                      color: isMine() ? Colors.white : Colors.black,
                       fontSize: 18,
                     ),
                   ),
@@ -78,10 +70,14 @@ class _MessageItemState extends State<MessageItem> {
           ),
         ),
         Visibility(
-          visible: !_isMine,
+          visible: !isMine(),
           child: SizedBox(width: 60),
         ),
       ],
     );
+  }
+
+  bool isMine() {
+    return widget.message.from == sl<LocalRepo>().getUser().data.email;
   }
 }
