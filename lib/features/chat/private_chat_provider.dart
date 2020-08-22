@@ -24,6 +24,7 @@ class PrivateChatProvider with ChangeNotifier {
   bool isRoomCreated = false;
   bool beenSubscribedBefore = false;
   bool otherIsTyping = false;
+  bool showLoading = false;
 
   void enableSend({bool enable}) {
     isSendEnabled = enable;
@@ -77,39 +78,61 @@ class PrivateChatProvider with ChangeNotifier {
     print('messagesListRenderBox: ${messagesListRenderBox.size.height}');
 
     if (totalContentHeight <= privateScaffoldHeight) {
-      MessagesPage page = await sl<ApiRepo>().getChatPage(
-        roomID: roomId,
-        skip: _messages[roomId].length,
-      );
-      for (int index = 0; index < page.messages.length; index++) {
-        Message m = page.messages[index];
-
-        if (index == 0) {
-          Message temp = _messages[roomId].last;
-          if (m.from == temp.from) {
-            temp.sequential = true;
-          }
-        }
-
-        _messages[roomId].add(m);
-
-        try {
-          if (page.messages[index + 1].from == m.from) {
-            _messages[roomId].last.sequential = true;
-          } else {
-            _messages[roomId].last.sequential = false;
-          }
-        } catch (_) {
-          _messages[roomId].last.sequential = false;
-        }
-
-        if (index == page.messages.length - 1) {
-          notifyListeners();
-          animateToLastMessage();
-        }
-      }
+      await getNextPage();
+      animateToLastMessage();
+      getDimensions();
+//      Future.delayed(Duration(milliseconds: 400)).then((value) {
+//        getDimensions();
+//      });
     } else {
       animateToLastMessage();
+    }
+  }
+
+  Future<void> getNextPage({bool makeMargin = false}) async {
+    showLoading = true;
+    notifyListeners();
+
+    MessagesPage page = await sl<ApiRepo>().getChatPage(
+      roomID: roomId,
+      skip: _messages[roomId].length,
+    );
+
+    showLoading = false;
+    notifyListeners();
+
+    for (int index = 0; index < page.messages.length; index++) {
+      Message m = page.messages[index];
+
+      if (index == 0) {
+        Message temp = _messages[roomId].last;
+        if (m.from == temp.from) {
+          temp.sequential = true;
+        }
+      }
+
+      _messages[roomId].add(m);
+
+      try {
+        if (page.messages[index + 1].from == m.from) {
+          _messages[roomId].last.sequential = true;
+        } else {
+          _messages[roomId].last.sequential = false;
+        }
+      } catch (_) {
+        _messages[roomId].last.sequential = false;
+      }
+
+      if (index == page.messages.length - 1) {
+        notifyListeners();
+        if (makeMargin) {
+          scrollController.animateTo(
+            10,
+            duration: Duration(milliseconds: 10),
+            curve: Curves.ease,
+          );
+        }
+      }
     }
   }
 

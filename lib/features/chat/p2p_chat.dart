@@ -21,6 +21,21 @@ class _PrivateChatState extends State<PrivateChat> {
   void initState() {
     super.initState();
     sl<PrivateChatProvider>().init();
+    sl<PrivateChatProvider>().scrollController.addListener(() {
+      if (sl<PrivateChatProvider>().scrollController.position.pixels == 0 &&
+          !sl<PrivateChatProvider>().showLoading) {
+        print('equal to zero');
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          sl<PrivateChatProvider>().getNextPage(makeMargin: true);
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    sl<PrivateChatProvider>().scrollController.removeListener(() {});
+    super.dispose();
   }
 
   @override
@@ -52,6 +67,17 @@ class _PrivateChatState extends State<PrivateChat> {
                         padding: const EdgeInsets.only(bottom: 10),
                         shrinkWrap: true,
                         children: [
+                          AnimatedContainer(
+                            height: instance.showLoading ? 60 : 0,
+                            duration: Duration(
+                              milliseconds: 100,
+                            ),
+                            child: Center(
+                                child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: LoadingIndicator(),
+                            )),
+                          ),
                           Column(
                             key: sl<PrivateChatProvider>().messagesListKey,
                             mainAxisSize: MainAxisSize.min,
