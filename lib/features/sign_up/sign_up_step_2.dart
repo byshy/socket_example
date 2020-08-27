@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:socketexample/features/login/login_provider.dart';
-import 'package:socketexample/services/navigation_service.dart';
 import 'package:socketexample/utils/colors.dart';
 import 'package:socketexample/utils/global_widgets/custom_flat_button.dart';
 import 'package:socketexample/utils/global_widgets/loading_indicator.dart';
-import 'package:socketexample/utils/routing/routes.dart';
 
 import '../../di.dart';
+import 'sign_up_provider.dart';
 
-class Login extends StatefulWidget {
+class SignUpStep2 extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _SignUpStep2State createState() => _SignUpStep2State();
 }
 
-class _LoginState extends State<Login> {
+class _SignUpStep2State extends State<SignUpStep2> {
+  bool hidePassword = true;
+  bool hidePasswordConf = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: sl<LoginProvider>().scaffoldKey,
+      key: sl<SignUpProvider>().signUp2Key,
       body: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
@@ -32,7 +33,7 @@ class _LoginState extends State<Login> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              'Welcome Back!',
+              'Add Password',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 38,
@@ -40,19 +41,31 @@ class _LoginState extends State<Login> {
             ),
             SizedBox(height: 40),
             TextField(
-              controller: sl<LoginProvider>().emailController,
+              controller: sl<SignUpProvider>().passwordController,
+              obscureText: hidePassword,
               textInputAction: TextInputAction.next,
               style: TextStyle(color: Colors.white),
               onEditingComplete: () {
                 FocusScope.of(context).requestFocus(
-                  sl<LoginProvider>().passwordFocus,
+                  sl<SignUpProvider>().usernameFocus,
                 );
               },
               decoration: InputDecoration(
-                hintText: 'EMAIL',
+                hintText: 'PASSWORD',
                 hintStyle: TextStyle(color: Colors.white),
                 filled: true,
                 fillColor: Color(0x88FFFFFF),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    hidePassword ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      hidePassword = !hidePassword;
+                    });
+                  },
+                ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
@@ -63,20 +76,31 @@ class _LoginState extends State<Login> {
             ),
             SizedBox(height: 10),
             TextField(
-              controller: sl<LoginProvider>().passwordController,
-              focusNode: sl<LoginProvider>().passwordFocus,
+              controller: sl<SignUpProvider>().passwordConfController,
+              focusNode: sl<SignUpProvider>().passwordCondFocus,
+              obscureText: hidePasswordConf,
               style: TextStyle(color: Colors.white),
               textInputAction: TextInputAction.done,
-              obscureText: true,
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
               },
               decoration: InputDecoration(
-                hintText: 'PASSWORD',
+                hintText: 'CONFIRM PASSWORD',
                 hintStyle: TextStyle(color: Colors.white),
                 filled: true,
                 fillColor: Color(0x88FFFFFF),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    hidePasswordConf ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      hidePasswordConf = !hidePasswordConf;
+                    });
+                  },
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(6),
@@ -84,68 +108,30 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FlatButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
+            SizedBox(height: 40),
             CustomFlatButton(
               color: blue34BBB3.withOpacity(0.8),
-              child: Consumer<LoginProvider>(
+              onPressed: () {
+                // TODO: use the sign up when Norhan finishes sign up route
+//                  sl<SignUpProvider>().signUp();
+                sl<SignUpProvider>().goToPage3();
+              },
+              child: Consumer<SignUpProvider>(
                 builder: (_, instance, child) {
-                  if (instance.isLoginLoading) {
+                  if (instance.isSignUpLoading) {
                     return LoadingIndicator(
                       color: Colors.white,
                       size: 20,
                     );
                   }
-
-                  return child;
-                },
-                child: Text(
-                  'Login',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                sl<LoginProvider>().login();
-              },
-            ),
-            SizedBox(height: 10),
-            FlatButton(
-              onPressed: () {
-                sl<NavigationService>().navigateTo(signUpStep1);
-              },
-              child: RichText(
-                text: TextSpan(
-                  text: 'Don\' have account? ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'Sign Up',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  return Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],

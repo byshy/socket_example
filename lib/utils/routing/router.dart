@@ -6,8 +6,13 @@ import 'package:socketexample/features/chat/p2p_chat.dart';
 import 'package:socketexample/features/chat/private_chat_provider.dart';
 import 'package:socketexample/features/login/login.dart';
 import 'package:socketexample/features/login/login_provider.dart';
-import 'package:socketexample/features/sign_up/sign_up.dart';
+import 'package:socketexample/features/new_design/chat_screen.dart';
+import 'package:socketexample/features/new_design/main_screen.dart';
+import 'package:socketexample/features/new_design/profile_provider.dart';
 import 'package:socketexample/features/sign_up/sign_up_provider.dart';
+import 'package:socketexample/features/sign_up/sign_up_step_1.dart';
+import 'package:socketexample/features/sign_up/sign_up_step_2.dart';
+import 'package:socketexample/features/sign_up/sign_up_step_3.dart';
 
 import '../../di.dart';
 import 'routes.dart';
@@ -22,10 +27,24 @@ class Router {
             value: sl<LoginProvider>(),
           ),
         );
-      case signUp:
+      case signUpStep1:
         return MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
-            child: SignUp(),
+            child: SignUpStep1(),
+            value: sl<SignUpProvider>(),
+          ),
+        );
+      case signUpStep2:
+        return MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            child: SignUpStep2(),
+            value: sl<SignUpProvider>(),
+          ),
+        );
+      case signUpStep3:
+        return MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            child: SignUpStep3(),
             value: sl<SignUpProvider>(),
           ),
         );
@@ -44,6 +63,17 @@ class Router {
             ),
             value: sl<PrivateChatProvider>(),
           ),
+        );
+      case mainScreen:
+        return MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            child: MainScreen(),
+            value: ProfileProvider(),
+          ),
+        );
+      case chatScreen:
+        return MaterialPageRoute(
+          builder: (_) => ChatScreen(),
         );
       default:
         return MaterialPageRoute(

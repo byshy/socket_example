@@ -14,6 +14,7 @@ import 'data/local_repository.dart';
 import 'features/active_users/active_users_provider.dart';
 import 'features/chat/group_chat_provider.dart';
 import 'features/chat/private_chat_provider.dart';
+import 'features/new_design/profile_provider.dart';
 import 'features/sign_up/sign_up_provider.dart';
 import 'services/navigation_service.dart';
 
@@ -82,6 +83,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => PrivateChatProvider());
   sl.registerLazySingleton(() => SignUpProvider());
   sl.registerLazySingleton(() => ActiveUsersProvider());
+  sl.registerLazySingleton(() => ProfileProvider());
 
   sl.registerLazySingleton(() => NavigationService());
 

@@ -16,6 +16,11 @@ class CustomFlatButton extends StatelessWidget {
         height: 40,
         child: Center(child: child),
       ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(6),
+        ),
+      ),
       color: color ?? Colors.grey[300],
     );
   }

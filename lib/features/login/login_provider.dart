@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:socketexample/data/api_repository.dart';
 import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/services/navigation_service.dart';
-import 'package:socketexample/utils/global_widgets/snackbar_error_message.dart';
+import 'package:socketexample/utils/global_widgets/error_dialog.dart';
 import 'package:socketexample/utils/routing/routes.dart';
 
 import '../../di.dart';
@@ -20,10 +20,9 @@ class LoginProvider with ChangeNotifier {
 
   void login() {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: SnackBarErrorMessage(message: 'All fields are required'),
-        ),
+      showErrorDialog(
+        context: scaffoldKey.currentState.context,
+        title: 'All fields are required',
       );
     } else {
       isLoginLoading = true;
@@ -34,15 +33,16 @@ class LoginProvider with ChangeNotifier {
       }).then((value) {
         isLoginLoading = false;
         notifyListeners();
-        if (value != null) {
+        if (value.errorMessage == null) {
+          emailController.text = '';
+          passwordController.text = '';
           sl<LocalRepo>().setUser(value);
           sl<NavigationService>().navigateToAndRemove(groupChat);
           refreshToken();
         } else {
-          scaffoldKey.currentState.showSnackBar(
-            SnackBar(
-              content: SnackBarErrorMessage(message: 'Something went wrong'),
-            ),
+          showErrorDialog(
+            context: scaffoldKey.currentState.context,
+            title: '${value.errorMessage}',
           );
         }
       });

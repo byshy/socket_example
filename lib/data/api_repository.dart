@@ -16,13 +16,12 @@ class ApiRepo {
       response = await client.post('login', data: data);
     } on DioError catch (e) {
       print('e: ${e.response.toString()}');
+      return User(errorMessage: e.response.data['msg']);
     }
 
     User user;
 
-    if (response.statusCode == 200) {
-      user = User.fromJson(response.data);
-    }
+    user = User.fromJson(response.data);
 
     return user;
   }
@@ -38,9 +37,7 @@ class ApiRepo {
 
     User user;
 
-    if (response.statusCode == 200) {
-      user = User.fromJson(response.data);
-    }
+    user = User.fromJson(response.data);
 
     return user;
   }
@@ -56,13 +53,11 @@ class ApiRepo {
 
     List<ActiveUser> users = List();
 
-    if (response.statusCode == 200) {
-      response.data['data'].forEach((v) {
-        if (v != null) {
-          users.add(ActiveUser.fromJson(v));
-        }
-      });
-    }
+    response.data['data'].forEach((v) {
+      if (v != null) {
+        users.add(ActiveUser.fromJson(v));
+      }
+    });
 
     return users;
   }
@@ -70,15 +65,9 @@ class ApiRepo {
   Future<MessagesPage> getChatPage({int skip, String roomID}) async {
     Response response;
 
-    print('skip: $skip');
-
     try {
-      response = await client.post(
-        'messages',
-        data: {
-          'skip': skip,
-          'room': roomID,
-        },
+      response = await client.get(
+        'messages/$roomID/$skip',
       );
     } on DioError catch (e) {
       print('e: ${e.response.toString()}');
@@ -86,9 +75,7 @@ class ApiRepo {
 
     MessagesPage messagesPage;
 
-    if (response.data['status'] == "200") {
-      messagesPage = MessagesPage.fromJson(response.data);
-    }
+    messagesPage = MessagesPage.fromJson(response.data);
 
     return messagesPage;
   }

@@ -24,7 +24,8 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       navigatorKey: sl<NavigationService>().navigatorKey,
-      initialRoute: sl<LocalRepo>().getUser() == null ? login : groupChat,
+      initialRoute: sl<LocalRepo>().getUser() == null ? login : mainScreen,
+//      initialRoute: sl<LocalRepo>().getUser() == null ? login : groupChat,
       onGenerateRoute: Router.generateRoute,
     );
   }
@@ -32,17 +33,13 @@ class MyApp extends StatelessWidget {
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('data')) {
-    // Handle data message
     final dynamic data = message['data'];
     print('myBackgroundMessageHandler data: ${data.toString()}');
   }
 
   if (message.containsKey('notification')) {
-    // Handle notification message
     final dynamic notification = message['notification'];
     print(
         'myBackgroundMessageHandler notification: ${notification.toString()}');
   }
-
-  // Or do other work.
 }

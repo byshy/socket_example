@@ -1,8 +1,13 @@
 class User {
   UserInfo data;
   String token;
+  String errorMessage;
 
-  User({this.data, this.token});
+  User({
+    this.data,
+    this.token,
+    this.errorMessage,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ? new UserInfo.fromJson(json['data']) : null;
