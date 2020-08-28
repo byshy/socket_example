@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/models/active_user.dart';
 import 'package:socketexample/models/messages_page.dart';
+import 'package:socketexample/models/rooms_list.dart';
 import 'package:socketexample/models/user.dart';
+
+import '../di.dart';
 
 class ApiRepo {
   final Dio client;
@@ -42,6 +46,29 @@ class ApiRepo {
     return user;
   }
 
+  Future<String> setProfileImage({FormData data}) async {
+    Response response;
+
+    User user = sl<LocalRepo>().getUser();
+    final String username = user.data.username;
+
+    try {
+      response = await client.post('upload-image/$username', data: data);
+    } on DioError catch (e) {
+      print('e: ${e.response.toString()}');
+    }
+
+    String image;
+
+    image = response.data.toString();
+
+    user.data.image = image;
+
+    sl<LocalRepo>().setUser(user);
+
+    return image;
+  }
+
   Future<List<ActiveUser>> getActiveUsers() async {
     Response response;
 
@@ -78,5 +105,21 @@ class ApiRepo {
     messagesPage = MessagesPage.fromJson(response.data);
 
     return messagesPage;
+  }
+
+  Future<RoomsList> getChats({Map<String, dynamic> data}) async {
+    Response response;
+
+    try {
+      response = await client.post('getrooms', data: data);
+    } on DioError catch (e) {
+      print('e: ${e.response.toString()}');
+    }
+
+    RoomsList roomsList;
+
+    roomsList = RoomsList.fromJson(response.data);
+
+    return roomsList;
   }
 }
