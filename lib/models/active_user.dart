@@ -1,14 +1,22 @@
 class ActiveUser {
   String name;
-  String email;
+  String username;
+  String image;
   String id;
   bool active;
 
-  ActiveUser({this.name, this.email, this.id, this.active});
+  ActiveUser({
+    this.name,
+    this.username,
+    this.id,
+    this.active,
+    this.image,
+  });
 
   ActiveUser.fromJson(Map<String, dynamic> json) {
     name = json['name'] ?? 'anonymous';
-    email = json['email'];
+    username = json['username'];
+    image = json['image'];
     id = json['id'];
     active = json['active'];
   }
@@ -16,7 +24,8 @@ class ActiveUser {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
-    data['email'] = this.email;
+    data['username'] = this.username;
+    data['image'] = this.image;
     data['id'] = this.id;
     data['active'] = this.active;
     return data;
@@ -24,6 +33,15 @@ class ActiveUser {
 
   @override
   String toString() {
-    return 'name: $name, email: $email';
+    return 'name: $name, username: $username, id: $id';
   }
+
+  bool operator ==(dynamic other) {
+    return other != null &&
+        other is ActiveUser &&
+        this.username == other.username;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
 }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,17 +44,21 @@ class SignUpProvider with ChangeNotifier {
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty) {
-      // TODO: replace snack bars with alert dialogs
-      signUp1Key.currentState.showSnackBar(
-        SnackBar(
-          content: SnackBarErrorMessage(message: 'All fields are required'),
-        ),
+      showErrorDialog(
+        context: signUp2Key.currentState.context,
+        title: 'All fields are required',
+      );
+    } else if (passwordController.text != passwordConfController.text) {
+      showErrorDialog(
+        context: signUp2Key.currentState.context,
+        title: 'Passwords don\'t match',
       );
     } else {
       isSignUpLoading = true;
       notifyListeners();
       sl<ApiRepo>().signUp(data: {
         'name': nameController.text,
+        'username': usernameController.text,
         'email': emailController.text,
         'password': passwordController.text,
       }).then((value) {
@@ -61,11 +66,14 @@ class SignUpProvider with ChangeNotifier {
         notifyListeners();
         if (value != null) {
           nameController.text = '';
+          usernameController.text = '';
           emailController.text = '';
           passwordController.text = '';
+          passwordConfController.text = '';
           sl<LocalRepo>().setUser(value);
-          sl<NavigationService>().navigateToAndRemove(groupChat);
           refreshToken();
+          FocusScope.of(signUp2Key.currentState.context).unfocus();
+          sl<NavigationService>().navigateTo(signUpStep3);
         } else {
           signUp1Key.currentState.showSnackBar(
             SnackBar(
@@ -91,21 +99,22 @@ class SignUpProvider with ChangeNotifier {
     }
   }
 
-  void goToPage3() {
-    FocusScope.of(signUp2Key.currentState.context).unfocus();
-    if (passwordController.text.isEmpty ||
-        passwordConfController.text.isEmpty) {
-      showErrorDialog(
-        context: signUp2Key.currentState.context,
-        title: 'All fields are required',
-      );
-    } else if (passwordController.text != passwordConfController.text) {
-      showErrorDialog(
-        context: signUp2Key.currentState.context,
-        title: 'Passwords don\'t match',
-      );
-    } else {
-      sl<NavigationService>().navigateTo(signUpStep3);
-    }
+  bool isUploadingProfileImage = false;
+
+  void setProfileImage() async {
+    isUploadingProfileImage = true;
+    notifyListeners();
+    print('${image.path}');
+    FormData formData = FormData.fromMap({
+      'avatar': await MultipartFile.fromFile(
+        image.path,
+        filename: 'profile_image',
+      ),
+    });
+    sl<ApiRepo>().setProfileImage(data: formData).then((value) {
+      isUploadingProfileImage = false;
+      notifyListeners();
+      sl<NavigationService>().navigateToAndRemove(mainScreen);
+    });
   }
 }

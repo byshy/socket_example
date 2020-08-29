@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:socketexample/features/login/login_provider.dart';
@@ -42,6 +43,7 @@ class _LoginState extends State<Login> {
             TextField(
               controller: sl<LoginProvider>().emailController,
               textInputAction: TextInputAction.next,
+              keyboardType: TextInputType.emailAddress,
               style: TextStyle(color: Colors.white),
               onEditingComplete: () {
                 FocusScope.of(context).requestFocus(

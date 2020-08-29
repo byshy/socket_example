@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:socketexample/models/active_user.dart';
 import 'package:socketexample/utils/global_widgets/loading_indicator.dart';
 import 'package:socketexample/utils/global_widgets/message_item.dart';
 
@@ -8,9 +7,9 @@ import '../../di.dart';
 import 'private_chat_provider.dart';
 
 class PrivateChat extends StatefulWidget {
-  final ActiveUser user;
+  final String username;
 
-  const PrivateChat({Key key, @required this.user}) : super(key: key);
+  const PrivateChat({Key key, @required this.username}) : super(key: key);
 
   @override
   _PrivateChatState createState() => _PrivateChatState();
@@ -24,7 +23,6 @@ class _PrivateChatState extends State<PrivateChat> {
     sl<PrivateChatProvider>().scrollController.addListener(() {
       if (sl<PrivateChatProvider>().scrollController.position.pixels == 0 &&
           !sl<PrivateChatProvider>().showLoading) {
-        print('equal to zero');
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           sl<PrivateChatProvider>().getNextPage(makeMargin: true);
         });
@@ -42,10 +40,7 @@ class _PrivateChatState extends State<PrivateChat> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: sl<PrivateChatProvider>().privateScaffoldKey,
-      appBar: AppBar(
-        key: sl<PrivateChatProvider>().appBarKey,
-        title: Text('${widget.user.name}'),
-      ),
+      backgroundColor: Colors.black,
       body: Consumer<PrivateChatProvider>(
         builder: (_, instance, child) {
           if (!instance.isRoomCreated) {
@@ -56,52 +51,78 @@ class _PrivateChatState extends State<PrivateChat> {
             );
           }
           return Column(
-            children: <Widget>[
+            children: [
               Expanded(
-                child: instance.messages == null
-                    ? Center(
-                        child: Text('No messages yet'),
-                      )
-                    : ListView(
-                        controller: sl<PrivateChatProvider>().scrollController,
-                        padding: const EdgeInsets.only(bottom: 10),
-                        shrinkWrap: true,
-                        children: [
-                          AnimatedContainer(
-                            height: instance.showLoading ? 60 : 0,
-                            duration: Duration(
-                              milliseconds: 100,
-                            ),
-                            child: Center(
-                                child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: LoadingIndicator(),
-                            )),
-                          ),
-                          Column(
-                            key: sl<PrivateChatProvider>().messagesListKey,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              for (int index = instance
-                                          .messages[
-                                              sl<PrivateChatProvider>().roomId]
-                                          .length -
-                                      1;
-                                  index >= 0;
-                                  index--)
-                                MessageItem(
-                                  key: Key('private_message_$index'),
-                                  message: instance.messages[
-                                      sl<PrivateChatProvider>().roomId][index],
-                                ),
-                            ],
-                          ),
-                        ],
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
+                    ),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      AppBar(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        centerTitle: true,
+                        key: sl<PrivateChatProvider>().appBarKey,
+                        title: Text('${widget.username}'),
                       ),
-              ),
-              Visibility(
-                visible: instance.otherIsTyping,
-                child: Image.asset('assets/gifs/kermit_typing.gif'),
+                      Expanded(
+                        child: instance.messages == null
+                            ? Center(
+                                child: Text('No messages yet'),
+                              )
+                            : ListView(
+                                controller:
+                                    sl<PrivateChatProvider>().scrollController,
+                                padding: const EdgeInsets.only(bottom: 10),
+                                shrinkWrap: true,
+                                children: [
+                                  AnimatedContainer(
+                                    height: instance.showLoading ? 60 : 0,
+                                    duration: Duration(
+                                      milliseconds: 100,
+                                    ),
+                                    child: Center(
+                                        child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: LoadingIndicator(),
+                                    )),
+                                  ),
+                                  Column(
+                                    key: sl<PrivateChatProvider>()
+                                        .messagesListKey,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      for (int index = instance
+                                                  .messages[
+                                                      sl<PrivateChatProvider>()
+                                                          .roomId]
+                                                  .length -
+                                              1;
+                                          index >= 0;
+                                          index--)
+                                        MessageItem(
+                                          key: Key('private_message_$index'),
+                                          message: instance.messages[
+                                              sl<PrivateChatProvider>()
+                                                  .roomId][index],
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                      ),
+                      Visibility(
+                        visible: instance.otherIsTyping,
+                        child: Image.asset('assets/gifs/kermit_typing.gif'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               Container(
                 key: sl<PrivateChatProvider>().bottomRowKey,
@@ -118,6 +139,7 @@ class _PrivateChatState extends State<PrivateChat> {
                           onEditingComplete: () {
                             FocusScope.of(context).requestFocus(FocusNode());
                           },
+                          style: TextStyle(color: Colors.white),
                           onChanged: (val) {
                             sl<PrivateChatProvider>().sendIsTyping();
                             if (val.isEmpty) {
@@ -130,14 +152,24 @@ class _PrivateChatState extends State<PrivateChat> {
                           },
                           decoration: InputDecoration(
                             hintText: 'message',
+                            hintStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.send),
+                        icon: Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
                         onPressed: sl<PrivateChatProvider>().isSendEnabled
                             ? () => sl<PrivateChatProvider>().sendMessage(
-                                  email: widget.user.email,
+                                  username: widget.username,
                                 )
                             : null,
                       ),
@@ -145,7 +177,7 @@ class _PrivateChatState extends State<PrivateChat> {
                   ),
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.black,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5),

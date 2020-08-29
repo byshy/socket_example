@@ -47,7 +47,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
               style: TextStyle(color: Colors.white),
               onEditingComplete: () {
                 FocusScope.of(context).requestFocus(
-                  sl<SignUpProvider>().usernameFocus,
+                  sl<SignUpProvider>().passwordCondFocus,
                 );
               },
               decoration: InputDecoration(
@@ -112,9 +112,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
             CustomFlatButton(
               color: blue34BBB3.withOpacity(0.8),
               onPressed: () {
-                // TODO: use the sign up when Norhan finishes sign up route
-//                  sl<SignUpProvider>().signUp();
-                sl<SignUpProvider>().goToPage3();
+                sl<SignUpProvider>().signUp();
               },
               child: Consumer<SignUpProvider>(
                 builder: (_, instance, child) {

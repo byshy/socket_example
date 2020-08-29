@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:socketexample/services/navigation_service.dart';
 import 'package:socketexample/utils/colors.dart';
 import 'package:socketexample/utils/global_widgets/custom_flat_button.dart';
+import 'package:socketexample/utils/global_widgets/loading_indicator.dart';
+import 'package:socketexample/utils/routing/routes.dart';
 
 import '../../di.dart';
 import 'sign_up_provider.dart';
@@ -42,7 +45,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
                       ),
                     ),
                     onPressed: () {
-                      // TODO: save the user and go home
+                      sl<NavigationService>().navigateToAndRemove(mainScreen);
                     },
                   ),
                 ],
@@ -93,14 +96,28 @@ class _SignUpStep3State extends State<SignUpStep3> {
               SizedBox(height: 40),
               CustomFlatButton(
                 color: blue34BBB3.withOpacity(0.8),
-                child: Text(
-                  'Done',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+                child: Consumer<SignUpProvider>(
+                  builder: (_, instance, child) {
+                    if (instance.isUploadingProfileImage) {
+                      return LoadingIndicator(
+                        color: Colors.white,
+                        size: 20,
+                      );
+                    }
+
+                    return child;
+                  },
+                  child: Text(
+                    'Done',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  sl<SignUpProvider>().setProfileImage();
+                },
               ),
               FlatButton(
                 child: Text(''),

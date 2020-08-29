@@ -31,24 +31,35 @@ class User {
 
 class UserInfo {
   String name;
+  String username;
   String email;
+  String image;
 
-  UserInfo({this.name, this.email});
+  UserInfo({
+    this.name,
+    this.username,
+    this.email,
+    this.image,
+  });
 
   UserInfo.fromJson(Map<String, dynamic> json) {
     name = json['name'];
+    username = json['username'];
     email = json['email'];
+    image = json['image'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
+    data['username'] = this.username;
     data['email'] = this.email;
+    data['image'] = this.image;
     return data;
   }
 
   @override
   String toString() {
-    return 'name: $name, email: $email';
+    return 'name: $name, username: $username, email: $email, image: $image';
   }
 }

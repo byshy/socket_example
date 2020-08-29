@@ -35,6 +35,12 @@ class LocalRepo {
     return null;
   }
 
+  void setUserImage({String image}) {
+    User user = getUser();
+    user.data.image = image;
+    setUser(user);
+  }
+
   void removeUser() {
     sharedPreferences.remove(USER);
   }

@@ -11,10 +11,8 @@ import 'package:socketexample/services/socket_service.dart';
 
 import 'data/api_repository.dart';
 import 'data/local_repository.dart';
-import 'features/active_users/active_users_provider.dart';
-import 'features/chat/group_chat_provider.dart';
 import 'features/chat/private_chat_provider.dart';
-import 'features/new_design/profile_provider.dart';
+import 'features/home/home_provider.dart';
 import 'features/sign_up/sign_up_provider.dart';
 import 'services/navigation_service.dart';
 
@@ -64,7 +62,7 @@ Future<void> init() async {
               'data',
               json.encode({
                 'name': sl<LocalRepo>().getUser().data.name,
-                'email': sl<LocalRepo>().getUser().data.email,
+                'username': sl<LocalRepo>().getUser().data.username,
                 'token': token,
               }),
             );
@@ -79,11 +77,11 @@ Future<void> init() async {
   sl.registerLazySingleton<SocketIO>(() => socketIO);
 
   sl.registerLazySingleton(() => LoginProvider());
-  sl.registerLazySingleton(() => GroupChatProvider());
+//  sl.registerLazySingleton(() => GroupChatProvider());
   sl.registerLazySingleton(() => PrivateChatProvider());
   sl.registerLazySingleton(() => SignUpProvider());
-  sl.registerLazySingleton(() => ActiveUsersProvider());
-  sl.registerLazySingleton(() => ProfileProvider());
+//  sl.registerLazySingleton(() => ActiveUsersProvider());
+  sl.registerLazySingleton(() => HomeProvider());
 
   sl.registerLazySingleton(() => NavigationService());
 

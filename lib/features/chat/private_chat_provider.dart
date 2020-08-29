@@ -44,7 +44,7 @@ class PrivateChatProvider with ChangeNotifier {
       beenSubscribedBefore = true;
       sl<SocketService>().socketIO.subscribe('typing', (jsonData) {
         Map<String, dynamic> data = json.decode(jsonData);
-        if (data['from'] != sl<LocalRepo>().getUser().data.email) {
+        if (data['from'] != sl<LocalRepo>().getUser().data.username) {
           otherIsTyping = true;
           notifyListeners();
           if (_timer != null) {
@@ -78,21 +78,19 @@ class PrivateChatProvider with ChangeNotifier {
     print('messagesListRenderBox: ${messagesListRenderBox.size.height}');
 
     if (totalContentHeight <= privateScaffoldHeight) {
-      await getNextPage();
+      bool again = await getNextPage();
       animateToLastMessage();
-      getDimensions();
-//      Future.delayed(Duration(milliseconds: 400)).then((value) {
-//        getDimensions();
-//      });
+      if (again) getDimensions();
     } else {
       animateToLastMessage();
     }
   }
 
-  Future<void> getNextPage({bool makeMargin = false}) async {
+  Future<bool> getNextPage({bool makeMargin = false}) async {
     showLoading = true;
     notifyListeners();
 
+    print('_messages[roomId].length: ${_messages[roomId].length}');
     MessagesPage page = await sl<ApiRepo>().getChatPage(
       roomID: roomId,
       skip: _messages[roomId].length,
@@ -100,6 +98,10 @@ class PrivateChatProvider with ChangeNotifier {
 
     showLoading = false;
     notifyListeners();
+
+    if (page.messages.isEmpty) {
+      return false;
+    }
 
     for (int index = 0; index < page.messages.length; index++) {
       Message m = page.messages[index];
@@ -134,6 +136,8 @@ class PrivateChatProvider with ChangeNotifier {
         }
       }
     }
+
+    return true;
   }
 
   void createRoom({@required String to, @required String toID}) {
@@ -142,21 +146,21 @@ class PrivateChatProvider with ChangeNotifier {
     sl<SocketService>().socketIO.sendMessage(
           'create room',
           json.encode({
-            'from': sl<LocalRepo>().getUser().data.email,
+            'from': sl<LocalRepo>().getUser().data.username,
             'to': to,
             'toID': toID,
           }),
         );
   }
 
-  void sendMessage({String email}) {
+  void sendMessage({String username}) {
     sl<SocketService>().socketIO.sendMessage(
           'private message',
           json.encode({
             'msg': messageController.text.trim(),
-            'from': sl<LocalRepo>().getUser().data.email,
+            'from': sl<LocalRepo>().getUser().data.username,
             'roomID': roomId,
-            'to': email,
+            'to': username,
           }),
         );
     messageController.text = '';
@@ -182,7 +186,7 @@ class PrivateChatProvider with ChangeNotifier {
     sl<SocketService>().socketIO.sendMessage(
           'typing',
           json.encode({
-            'from': sl<LocalRepo>().getUser().data.email,
+            'from': sl<LocalRepo>().getUser().data.username,
             'roomID': roomId,
           }),
         );

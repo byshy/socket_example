@@ -43,7 +43,7 @@ class _MessageItemState extends State<MessageItem> {
                 ),
               ),
               Card(
-                color: isMine() ? Colors.blue : Colors.grey[200],
+                color: isMine() ? Color(0xFFfea6a6) : Colors.grey[200],
                 margin: EdgeInsets.only(
                   left: 8.0,
                   right: 8.0,
@@ -78,6 +78,6 @@ class _MessageItemState extends State<MessageItem> {
   }
 
   bool isMine() {
-    return widget.message.from == sl<LocalRepo>().getUser().data.email;
+    return widget.message.from == sl<LocalRepo>().getUser().data.username;
   }
 }

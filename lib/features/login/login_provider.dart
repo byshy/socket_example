@@ -37,7 +37,7 @@ class LoginProvider with ChangeNotifier {
           emailController.text = '';
           passwordController.text = '';
           sl<LocalRepo>().setUser(value);
-          sl<NavigationService>().navigateToAndRemove(groupChat);
+          sl<NavigationService>().navigateToAndRemove(mainScreen);
           refreshToken();
         } else {
           showErrorDialog(

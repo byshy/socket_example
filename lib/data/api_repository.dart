@@ -49,11 +49,8 @@ class ApiRepo {
   Future<String> setProfileImage({FormData data}) async {
     Response response;
 
-    User user = sl<LocalRepo>().getUser();
-    final String username = user.data.username;
-
     try {
-      response = await client.post('upload-image/$username', data: data);
+      response = await client.post('upload_image', data: data);
     } on DioError catch (e) {
       print('e: ${e.response.toString()}');
     }
@@ -62,9 +59,7 @@ class ApiRepo {
 
     image = response.data.toString();
 
-    user.data.image = image;
-
-    sl<LocalRepo>().setUser(user);
+    sl<LocalRepo>().setUserImage(image: image);
 
     return image;
   }
@@ -107,11 +102,13 @@ class ApiRepo {
     return messagesPage;
   }
 
-  Future<RoomsList> getChats({Map<String, dynamic> data}) async {
+  Future<RoomsList> getChats({int skip}) async {
     Response response;
 
     try {
-      response = await client.post('getrooms', data: data);
+      response = await client.get(
+        'getrooms/$skip',
+      );
     } on DioError catch (e) {
       print('e: ${e.response.toString()}');
     }

@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:socketexample/features/chat/group_chat.dart';
-import 'package:socketexample/features/chat/group_chat_provider.dart';
 import 'package:socketexample/features/chat/p2p_chat.dart';
 import 'package:socketexample/features/chat/private_chat_provider.dart';
+import 'package:socketexample/features/home/home_provider.dart';
+import 'package:socketexample/features/home/main_screen.dart';
 import 'package:socketexample/features/login/login.dart';
 import 'package:socketexample/features/login/login_provider.dart';
-import 'package:socketexample/features/new_design/chat_screen.dart';
-import 'package:socketexample/features/new_design/main_screen.dart';
-import 'package:socketexample/features/new_design/profile_provider.dart';
 import 'package:socketexample/features/sign_up/sign_up_provider.dart';
 import 'package:socketexample/features/sign_up/sign_up_step_1.dart';
 import 'package:socketexample/features/sign_up/sign_up_step_2.dart';
@@ -48,18 +45,18 @@ class Router {
             value: sl<SignUpProvider>(),
           ),
         );
-      case groupChat:
-        return MaterialPageRoute(
-          builder: (_) => ChangeNotifierProvider.value(
-            child: GroupChat(),
-            value: sl<GroupChatProvider>(),
-          ),
-        );
+//      case groupChat:
+//        return MaterialPageRoute(
+//          builder: (_) => ChangeNotifierProvider.value(
+//            child: GroupChat(),
+//            value: sl<GroupChatProvider>(),
+//          ),
+//        );
       case privateChat:
         return MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             child: PrivateChat(
-              user: settings.arguments,
+              username: settings.arguments,
             ),
             value: sl<PrivateChatProvider>(),
           ),
@@ -68,12 +65,8 @@ class Router {
         return MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             child: MainScreen(),
-            value: ProfileProvider(),
+            value: sl<HomeProvider>(),
           ),
-        );
-      case chatScreen:
-        return MaterialPageRoute(
-          builder: (_) => ChatScreen(),
         );
       default:
         return MaterialPageRoute(

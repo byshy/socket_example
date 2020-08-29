@@ -4,6 +4,7 @@ import 'package:socketexample/di.dart' as di;
 
 import 'di.dart';
 import 'services/navigation_service.dart';
+import 'utils/colors.dart';
 import 'utils/routing/router.dart';
 import 'utils/routing/routes.dart';
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Socket.IO Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: blue34BBB3,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       navigatorKey: sl<NavigationService>().navigatorKey,
