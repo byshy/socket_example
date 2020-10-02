@@ -26,7 +26,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    sl<HomeProvider>().getChats();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       sl<HomeProvider>().init();
     });

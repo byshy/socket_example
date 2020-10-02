@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:socketexample/features/login/login_provider.dart';
@@ -16,6 +17,15 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  @override
+  void initState() {
+    super.initState();
+    if (!kReleaseMode) {
+      sl<LoginProvider>().emailController.text = 'baselpd@gmail.com';
+      sl<LoginProvider>().passwordController.text = 'ab123456';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

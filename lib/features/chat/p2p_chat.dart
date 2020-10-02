@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:socketexample/models/message.dart';
+import 'package:socketexample/utils/colors.dart';
 import 'package:socketexample/utils/global_widgets/loading_indicator.dart';
 import 'package:socketexample/utils/global_widgets/message_item.dart';
 
@@ -46,10 +48,11 @@ class _PrivateChatState extends State<PrivateChat> {
           if (!instance.isRoomCreated) {
             return Center(
               child: LoadingIndicator(
-                color: Colors.blue,
+                color: blue34BBB3,
               ),
             );
           }
+
           return Column(
             children: [
               Expanded(
@@ -71,50 +74,11 @@ class _PrivateChatState extends State<PrivateChat> {
                         title: Text('${widget.username}'),
                       ),
                       Expanded(
-                        child: instance.messages == null
-                            ? Center(
-                                child: Text('No messages yet'),
-                              )
-                            : ListView(
-                                controller:
-                                    sl<PrivateChatProvider>().scrollController,
-                                padding: const EdgeInsets.only(bottom: 10),
-                                shrinkWrap: true,
-                                children: [
-                                  AnimatedContainer(
-                                    height: instance.showLoading ? 60 : 0,
-                                    duration: Duration(
-                                      milliseconds: 100,
-                                    ),
-                                    child: Center(
-                                        child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: LoadingIndicator(),
-                                    )),
-                                  ),
-                                  Column(
-                                    key: sl<PrivateChatProvider>()
-                                        .messagesListKey,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      for (int index = instance
-                                                  .messages[
-                                                      sl<PrivateChatProvider>()
-                                                          .roomId]
-                                                  .length -
-                                              1;
-                                          index >= 0;
-                                          index--)
-                                        MessageItem(
-                                          key: Key('private_message_$index'),
-                                          message: instance.messages[
-                                              sl<PrivateChatProvider>()
-                                                  .roomId][index],
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                        child: messagesBuilder(
+                          messages: instance
+                              .messages[sl<PrivateChatProvider>().roomId],
+                          showLoading: instance.showLoading,
+                        ),
                       ),
                       Visibility(
                         visible: instance.otherIsTyping,
@@ -192,6 +156,45 @@ class _PrivateChatState extends State<PrivateChat> {
           );
         },
       ),
+    );
+  }
+
+  Widget messagesBuilder({List<Message> messages, bool showLoading}) {
+    if (messages.isEmpty) {
+      return Center(
+        child: Text('No messages yet'),
+      );
+    }
+
+    return ListView(
+      controller: sl<PrivateChatProvider>().scrollController,
+      padding: const EdgeInsets.only(bottom: 10),
+      shrinkWrap: true,
+      children: [
+        AnimatedContainer(
+          height: showLoading ? 60 : 0,
+          duration: Duration(
+            milliseconds: 100,
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: LoadingIndicator(),
+            ),
+          ),
+        ),
+        Column(
+          key: sl<PrivateChatProvider>().messagesListKey,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int index = messages.length - 1; index >= 0; index--)
+              MessageItem(
+                key: Key('private_message_$index'),
+                message: messages[index],
+              ),
+          ],
+        ),
+      ],
     );
   }
 }

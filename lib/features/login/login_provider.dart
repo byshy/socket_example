@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:socketexample/data/api_repository.dart';
 import 'package:socketexample/data/local_repository.dart';
 import 'package:socketexample/services/navigation_service.dart';
+import 'package:socketexample/services/socket_service.dart';
 import 'package:socketexample/utils/global_widgets/error_dialog.dart';
 import 'package:socketexample/utils/routing/routes.dart';
 
@@ -37,6 +38,8 @@ class LoginProvider with ChangeNotifier {
           emailController.text = '';
           passwordController.text = '';
           sl<LocalRepo>().setUser(value);
+          // TODO: test if this works
+          sl<SocketService>().socketIO.connect();
           sl<NavigationService>().navigateToAndRemove(mainScreen);
           refreshToken();
         } else {

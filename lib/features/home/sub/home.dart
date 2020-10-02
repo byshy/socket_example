@@ -55,28 +55,37 @@ class Home extends StatelessWidget {
                   ],
                 ),
               ),
-              ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 170),
-                child: ListView.separated(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-//                    horizontal: 16.0,
-                    vertical: 30,
-                  ),
-                  itemCount: instance.activeUsers.length,
-                  itemBuilder: (_, index) {
-                    ActiveUser _user = instance.activeUsers[index];
+              instance.connected
+                  ? ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: 170),
+                      child: ListView.separated(
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 30,
+                        ),
+                        itemCount: instance.activeUsers.length,
+                        itemBuilder: (_, index) {
+                          ActiveUser _user = instance.activeUsers[index];
 
-                    if (_user.username == username) return SizedBox();
+                          if (_user.username == username) return SizedBox();
 
-                    return userItem(
-                      user: _user,
-                    );
-                  },
-                  separatorBuilder: (_, index) => SizedBox(width: 10),
-                ),
-              ),
+                          return userItem(
+                            user: _user,
+                          );
+                        },
+                        separatorBuilder: (_, index) => SizedBox(width: 10),
+                      ),
+                    )
+                  : ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: 170),
+                      child: Center(
+                        child: Text(
+                          'Lost connection to server, reconnecting',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
               Expanded(
                 child: Container(
                   child: Column(
@@ -151,20 +160,44 @@ class Home extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              height: 64,
-              width: 64,
-              child: user.image == null
-                  ? Icon(
-                      Icons.person,
-                      size: 45,
-                      color: Colors.white,
-                    )
-                  : CachedNetworkImage(imageUrl: user.image),
-              decoration: BoxDecoration(
-                color: blue34BBB3,
-                borderRadius: BorderRadius.all(Radius.circular(100)),
-              ),
+            Stack(
+              children: [
+                Container(
+                  height: 64,
+                  width: 64,
+                  clipBehavior: Clip.hardEdge,
+                  child: user.image == null
+                      ? Icon(
+                          Icons.person,
+                          size: 45,
+                          color: Colors.white,
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: user.image,
+                          fit: BoxFit.cover,
+                        ),
+                  decoration: BoxDecoration(
+                    color: blue34BBB3,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(100),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    height: 20,
+                    width: 20,
+                    decoration: BoxDecoration(
+                      color: user.active ? Colors.green : Colors.red,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 10),
             Text(
@@ -181,7 +214,6 @@ class Home extends StatelessWidget {
 
   Widget messageItem({Room room}) {
     String name = room.to != username ? room.to : room.from;
-    print('room.roomID: ${room.roomID}');
     return ListTile(
       onTap: () {
         sl<NavigationService>().navigateTo(privateChat, args: name);

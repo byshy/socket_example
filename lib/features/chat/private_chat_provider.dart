@@ -75,8 +75,6 @@ class PrivateChatProvider with ChangeNotifier {
         appBarRenderBox.size.height +
         bottomRowRenderBox.size.height;
 
-    print('messagesListRenderBox: ${messagesListRenderBox.size.height}');
-
     if (totalContentHeight <= privateScaffoldHeight) {
       bool again = await getNextPage();
       animateToLastMessage();
@@ -90,7 +88,6 @@ class PrivateChatProvider with ChangeNotifier {
     showLoading = true;
     notifyListeners();
 
-    print('_messages[roomId].length: ${_messages[roomId].length}');
     MessagesPage page = await sl<ApiRepo>().getChatPage(
       roomID: roomId,
       skip: _messages[roomId].length,

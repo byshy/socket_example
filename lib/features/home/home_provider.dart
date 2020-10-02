@@ -14,6 +14,13 @@ import 'package:socketexample/services/socket_service.dart';
 import '../../di.dart';
 
 class HomeProvider with ChangeNotifier {
+  bool connected = true;
+
+  void setConnectionStatus({@required isConnected}) {
+    connected = isConnected;
+    notifyListeners();
+  }
+
   PickedFile image;
 
   final picker = ImagePicker();
@@ -22,7 +29,7 @@ class HomeProvider with ChangeNotifier {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
     image = PickedFile(pickedFile.path);
-    notifyListeners();
+    setProfileImage();
   }
 
   List<ActiveUser> _users = List();
@@ -41,6 +48,9 @@ class HomeProvider with ChangeNotifier {
   void addActiveUser(ActiveUser user) {
     if (!_users.contains(user)) {
       _users.add(user);
+      notifyListeners();
+    } else {
+      _users[_users.indexOf(user)].active = user.active;
       notifyListeners();
     }
   }
@@ -146,5 +156,10 @@ class HomeProvider with ChangeNotifier {
       roomsList = value;
       notifyListeners();
     });
+  }
+
+  void reset() {
+    roomsList = RoomsList(rooms: List());
+    notifyListeners();
   }
 }

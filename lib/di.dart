@@ -49,7 +49,6 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<Dio>(() => client);
 
-  // TODO: display socket status to the user.
   SocketIO socketIO = SocketIOManager().createSocketIO(
     'https://nour-chat.herokuapp.com',
     '/admin',
@@ -58,6 +57,7 @@ Future<void> init() async {
       String token = sl<LocalRepo>().getFirebaseToken();
       print('token from di: $token');
       if (data == 'connect') {
+        sl<HomeProvider>().setConnectionStatus(isConnected: true);
         sl<SocketService>().socketIO.sendMessage(
               'data',
               json.encode({
@@ -67,8 +67,12 @@ Future<void> init() async {
               }),
             );
       } else if (data == 'reconnecting') {
+        sl<HomeProvider>().setConnectionStatus(isConnected: false);
       } else if (data == 'connect_error') {
-      } else if (data == 'reconnect_error') {}
+        sl<HomeProvider>().setConnectionStatus(isConnected: false);
+      } else if (data == 'reconnect_error') {
+        sl<HomeProvider>().setConnectionStatus(isConnected: false);
+      }
     },
   );
 

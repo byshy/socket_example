@@ -57,7 +57,7 @@ class ApiRepo {
 
     String image;
 
-    image = response.data.toString();
+    image = response.data['data'].toString();
 
     sl<LocalRepo>().setUserImage(image: image);
 
